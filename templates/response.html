@@ -1,0 +1,53 @@
+{% include 'head.html' %}
+
+<body>
+
+{% include 'menu.html' %}
+
+<div class="container">
+
+      <h1>Segment Results</h1>
+
+  <div style="margin-bottom:6rem;">
+    <table class="table">
+
+      <tr></tr>
+      <td>Hits</td>
+      <td>{{query_json.hits.total}}</td>
+
+    </table>
+  </div>
+
+  <div>
+    <p class="lead">Results from {{start}}-{{stop}}</p>
+
+    <input class="form-control" id="searchInput" type="text" placeholder="Search.." style="margin-bottom:10px;">
+    <table class="table table-hover table-sm">
+      <thead>
+        <tr>
+          <th>Index</th>
+          <th>SegChr</th>
+          <th>SegStart</th>
+          <th>SegEnd</th>
+          <th>Protocol</th>
+          <th>CellType</th>
+        </tr>
+      </thead>
+      <tbody id="retTable">
+      {% for index in query_json.hits.hits %}
+        <tr>
+          <td>{{ index._id }}</td>
+          <td>{{ index._source.Segment.segChr }}</td>
+          <td>{{ index._source.Segment.segStart }}</td>
+          <td>{{ index._source.Segment.segEnd }}</td>
+          <td>{{ index._source.experiment.experimentProtocol}}</td>
+          <td>{{ index._source.experiment.experimentCellType}}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{% include 'foot.html' %}

@@ -1,0 +1,21 @@
+{% include 'head.html' %}
+
+<body>
+
+{% include 'menu.html' %}
+
+<div class="container">
+
+      <h1>Search Segments</h1>
+      <p class="lead">Use a starting point and ending point for a search across records.</p>
+
+  <table class="table" style="max-width:50%;">
+    <form method="POST" action="/get">
+      <tr><td>Start Value:</td><td><input type="text" name="start" /></td></tr>
+      <tr><td>End Value:</td><td><input type="text" name="stop" /></td></tr>
+      <tr><td></td><td><button class="btn btn-primary btn-sm">Search</button></td></tr>
+    </form>
+  </table>
+</div>
+
+{% include 'foot.html' %}
