@@ -14,6 +14,7 @@
       <tr></tr>
       <td>Hits</td>
       <td>{{query_json.hits.total}}</td>
+      <td><a href="http://episb.org/api/segment/{{start}}/{{stop}}"><button style="margin-right:1em;" class="btn btn-xs btn-primary">API</button></a>  <code>http://episb.org/api/segment/{{start}}/{{stop}}</code></td>
 
     </table>
   </div>
@@ -21,7 +22,7 @@
   <div>
     <p class="lead">Results from {{start}}-{{stop}}</p>
 
-    <input class="form-control" id="searchInput" type="text" placeholder="Search.." style="margin-bottom:10px;">
+    <input class="form-control" id="searchInput" type="text" placeholder="Filter..." style="margin-bottom:10px;">
     <table class="table table-hover table-sm">
       <thead>
         <tr>
