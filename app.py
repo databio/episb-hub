@@ -29,9 +29,9 @@ def render_segments_json(start,stop):
 def get_segments():
   start = request.form.get("start")
   stop = request.form.get("stop")
-  if start == '':
+  if not start:
     start = '0'
-  if stop == '':
+  if not stop:
     stop = '0'
   url = "http://episb.org/segment/" + start + "/" + stop
   return redirect(url, code=302)
