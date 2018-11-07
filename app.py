@@ -33,6 +33,8 @@ def get_segments():
     start = '0'
   if not stop:
     stop = '0'
+  if (stop <= start):
+    return render_template("error.html", errmsg="STOP value is greater than or equal to START value")
   url = "http://episb.org/segment/" + start + "/" + stop
   return redirect(url, code=302)
 
