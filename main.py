@@ -7,8 +7,6 @@ es_host = '172.17.0.1'
 
 @app.route('/segment/<start>/<stop>')
 def render_segments(start,stop):
-  utils.intcheck(start)
-  utils.intcheck(stop)  
   url = "http://" + es_host + ":8080/episb-rest-server/get/fromSegment/" + start + "/" + stop
   try:
     url_req = urllib.urlopen(url)
@@ -45,4 +43,4 @@ def index():
   return render_template("home.html")
 
 if __name__ == '__main__':
-  app.run(host='0.0.0.0',port=80,debug=True)
+  app.run(host='0.0.0.0',port=8888,debug=True)
