@@ -7,6 +7,12 @@ es_host = '172.17.0.1'
 
 @app.route('/segment/<start>/<stop>')
 def render_segments(start,stop):
+  if not start:
+    start = '0'
+  if not stop:
+    stop = '0'
+  if (stop <= start):
+    return render_template("error.html", errmsg="STOP value is greater than or equal to START value")
   url = "http://" + es_host + ":8080/episb-rest-server/get/fromSegment/" + start + "/" + stop
   try:
     url_req = urllib.urlopen(url)
