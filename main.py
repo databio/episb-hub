@@ -31,6 +31,10 @@ def render_segments_json(start,stop):
   except urllib.error.URLError as e:
     print(e.reason)
 
+@app.route('/api')
+def render_api():
+  return render_template("api.html")
+
 @app.route("/get", methods=["GET","POST"])
 def get_segments():
   start = request.form.get("start")
