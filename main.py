@@ -7,12 +7,7 @@ es_host = '172.17.0.1'
 
 @app.route('/segment/<start>/<stop>')
 def render_segments(start,stop):
-  if not start:
-    start = '0'
-  if not stop:
-    stop = '0'
-  if (stop <= start):
-    return render_template("error.html", errmsg="STOP value is greater than or equal to START value")
+  check_start_stop(start,stop)
   url = "http://" + es_host + ":8080/episb-rest-server/get/fromSegment/" + start + "/" + stop
   try:
     url_req = urllib.urlopen(url)
@@ -21,7 +16,7 @@ def render_segments(start,stop):
   except urllib.error.URLError as e:
     print(e.reason)
 
-@app.route('/api/segment/<start>/<stop>')
+@app.route('/api/v1/segment/<start>/<stop>')
 def render_segments_json(start,stop):
   url = "http://" + es_host + ":8080/episb-rest-server/get/fromSegment/" + start + "/" + stop
   try:
@@ -36,25 +31,28 @@ def render_api():
   return render_template("api.html")
 
 @app.route('/about')
-def render_api():
+def render_about():
   return render_template("about.html")
 
 @app.route("/get", methods=["GET","POST"])
 def get_segments():
   start = request.form.get("start")
   stop = request.form.get("stop")
-  if not start:
-    start = '0'
-  if not stop:
-    stop = '0'
-  if (stop <= start):
-    return render_template("error.html", errmsg="STOP value is greater than or equal to START value")
+  check_start_stop(start,stop)
   url = "http://episb.org/segment/" + start + "/" + stop
   return redirect(url, code=302)
 
 @app.route('/')
 def index():
   return render_template("home.html")
+
+def check_start_stop(start,stop):
+  if not start:
+    start = '0'
+  if not stop:
+    stop = '0'
+  if (stop <= start):
+    return render_template("error.html", errmsg="STOP value is greater than or equal to START value")
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0',port=8888,debug=True)
