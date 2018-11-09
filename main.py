@@ -35,6 +35,10 @@ def render_segments_json(start,stop):
 def render_api():
   return render_template("api.html")
 
+@app.route('/about')
+def render_api():
+  return render_template("about.html")
+
 @app.route("/get", methods=["GET","POST"])
 def get_segments():
   start = request.form.get("start")
