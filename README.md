@@ -2,9 +2,9 @@
 
 ## Project components
 
-A complete `epigenome switchboard` consists of 3 different types of servers:
+To build an `epigenome switchboard` requires 3 components:
 
-### 1. Vocabulary server
+### 1. A vocabulary server
 
 The vocabulary server provides common terms so that distributed data sources can be integrated. There need only be a single vocabulary server for any number of instances of the other servers. It simply provides a permanent, static URL for common terms so that we can use [json-ld](https://json-ld.org/) to integrate data from multiple sources.
 
@@ -12,7 +12,7 @@ The vocabulary server provides common terms so that distributed data sources can
 - Github: https://github.com/databio/bioterms
 
 
-### 2. Data provider (could be called a `spoke` ?)
+### 2. One or more data providers (could be called a `spoke` ?)
 
 The data provider is a generic server that hosts actual epigenome data. The data is stored as intervals (*a.k.a.* segments, or genome regions). This is a RESTful server that provides access to the raw data via the *Data provider API* (which is still under development). There will be many data providers, and we aim to provide a packaged system so that a third party with either public or private data could fit that data into a data provider instance that would integrate with the epigenome switchboard.
 
@@ -21,7 +21,7 @@ Our protoype data provider is housed here:
 - URL: (currently internal only, hosted via `localhost` on our dev machine)
 - Github: https://github.com/databio/episb-provider
 
-### 3. Hub, or query overlay server
+### 3. The hub, or query overlay server
 
 The *hub* links together data providers. A hub provides 2 things: a web interface for user-friendly data queries, and a documented API for programmatic access to integrated data. A hub connects any number of public or private data providers. Furthermore, there could be several hubs, each one connecting a different set of data providers. For example, a given hub may  focus on private data, or a certain species or data type, etc.
 
