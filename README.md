@@ -17,7 +17,7 @@ The vocabulary server provides common terms so that distributed data sources can
 
 ### 2. One or more data providers (could be called a `spoke` ?)
 
-The data provider is a generic server that hosts actual epigenome data. The data is stored as intervals (*a.k.a.* segments, or genome regions). This is a RESTful server that provides access to the raw data via the *Data provider API* (which is still under development). There will be many data providers, and we aim to provide a packaged system so that a third party with either public or private data could fit that data into a data provider instance that would integrate with the epigenome switchboard.
+The data provider is a generic server that hosts actual epigenome data. The data is stored as *regions* (*a.k.a.* segments, or genomic intervals). This is a RESTful server that provides access to the raw data via the *Data provider API* (which is still under development). There will be many data providers, and we aim to provide a packaged system so that a third party with either public or private data could fit that data into a data provider instance that would integrate with the epigenome switchboard.
 
 Our protoype data provider is housed here:
 
@@ -40,7 +40,7 @@ In addition to the 3 primary server components, we must formalize the relationsh
 
 ### 1. Data provider API
 
-The data provider API will describe the link between a *provider* and a *hub*. One aspect of this will be the `provider design interface` (described below).
+The data provider API will describe the link between a *provider* and a *hub*. One aspect of this will be the `provider design interface`. Discussion on this interface can be found in this issue: https://github.com/databio/episb-provider/issues/6
 
 ### 2. User-facing hub API
 
@@ -48,7 +48,7 @@ We also need a documented API for users to interact with the hub. We will ultima
 
 # Epigenome switchboard hub
 
-A simple Flask web application to interact with the [episb-rest-server](https://github.com/databio/episb/tree/master/episb-rest-server)
+The hub code itself it hosted in this repository. It is a simple Flask web application to interact with the data provider.
 
 ## Search
 
@@ -64,6 +64,8 @@ Additional queries will be added in the near future.
 
 
 ## Example queries for user-facing query API
+
+For discussion on different query types, see the `query-type` issues: https://github.com/databio/episb-hub/issues
 
 1. Translating annotation limits into region sets (Retrieving integrated region sets). For example, give me the set of regions with annotation values above *x* in cell-type *y* but below *a* in cell-types *b*, *c*, and *d*. A more complicated example: a user could request that the system return the set of genomic regions that are annotated as filling the following four critera: First, they have open chromatin in macrophages, but not in other hematopoietic cell types, as defined by the ENCODE cross cell-type chromatin analysis; second, they have H3K27ac in M1 macrophages but not in M2 macrophages, as defined by the BLUEPRINT project data; third, they are polycomb repressed in hematopoietic stem cells, as defined by data from the Roadmap Epigenomics project; and fourth, they are within a set of regions defined as CRISPR-targetable in private lab-specific experimental results.
 
