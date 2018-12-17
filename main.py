@@ -34,6 +34,10 @@ def render_api():
 def render_about():
   return render_template("about.html")
 
+@app.route('/subscriptions')
+def render_subscriptions():
+  return render_template("subscriptions.html")
+
 @app.route("/get", methods=["GET","POST"])
 def get_segments():
   start = request.form.get("start")

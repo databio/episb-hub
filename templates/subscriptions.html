@@ -1,0 +1,53 @@
+{% include 'head.html' %}
+
+{% include 'menu.html' %}
+
+<div class="container">
+
+  <h1 style="margin-bottom:4rem;">Data provider subscriptions</h1>
+
+  Data provider subscriptions identify the remote data providers that this hub imports. You can use this interface to add subscriptions to both public and private data providers.
+
+  <table class="table table-striped table-hover table-sm">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Provider name</th>
+        <th scope="col">URL</th>
+        <th scope="col">Author</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">1</th>
+        <td>EPISB internal provider</td>
+        <td>http://localhost:5000/data-server</td>
+        <td>OD</td>
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td>Regulatory Elements Database</td>
+        <td>http://db.databio.org/episb</td>
+        <td>NS</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <div class="col-sm-12">
+    <h2>Add data provider subscription</h2>
+    <p class="lead">The URL must link to a data provider that implements the EPISB data interface API.</p>
+    <form method="POST" action="/get">
+      <div class="form-group">
+        <label for="url">URL:</label><input type="text" name="url" id="urlval" class="form-control" disabled />
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary btn-sm form-control" disabled>Subscribe</button>
+      </div>
+    </form>
+  </div>
+
+
+</div>
+
+{% include 'foot.html' %}
