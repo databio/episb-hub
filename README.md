@@ -73,3 +73,11 @@ For discussion on different query types, see the `query-type` issues: https://gi
 
 3. Retrieving annotations for a given region or region set. For example, the user provides a set of genomic regions and wants to retrieve all annotations for those regions. Biological use cases: given a set of genetic variants from a GWAS study, return the functional annotations across data providers for each disease-associated SNP.
 
+
+# Running the app for development
+
+```
+FLASK_APP="main.py" flask run
+```
+
+Point browser to http://localhost:5000
