@@ -4,9 +4,9 @@ services:
   - docker
 
 before_install:
-  # - echo $DOCKER_PASSWORD | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - echo $DOCKER_PASSWORD | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 install:
     docker build --no-cache -t databio/episb-hub:tiangolo . || exit 1;
-    # docker push databio/episb-hub:tiangolo || exit 1;
-    # aws sqs send-message --queue-url 'https://queue.amazonaws.com/474683445819/episb-updates' --message-body $TRAVIS_BRANCH || exit 1;
+    docker push databio/episb-hub:tiangolo || exit 1;
+    aws sqs send-message --queue-url 'https://queue.amazonaws.com/474683445819/episb-updates' --message-body $TRAVIS_BRANCH || exit 1;
