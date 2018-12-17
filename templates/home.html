@@ -9,7 +9,7 @@
 
   <div class="row">
   <div class="col-sm-4">
-    <h2>Search Segments</h2>
+    <h2>Search segments</h2>
     <p class="lead">Use a starting point and ending point for a search across records.</p>
     <form method="POST" action="/get">
       <div class="form-group">
@@ -23,6 +23,54 @@
       </div>
     </form>
   </div>
+
+ <div class="col-sm-4">
+    <h2>Query annotations</h2>
+    <p class="lead">Use a starting point and ending point for a search across records.</p>
+    <form method="POST" action="/get">
+      <div class="form-group">
+        <label for="regionIDs">Region IDs:</label><input type="text" name="start" id="regionIDs" class="form-control" disabled />
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary btn-sm form-control" disabled>Search</button>
+      </div>
+    </form>
+  </div>
+
+ <div class="col-sm-12">
+    <h2>Segmentation filter</h2>
+    <p class="lead">Starting with a Segmentation, filter to a biologically relevant subset of regions.</p>
+    <form method="POST" action="/get">
+      <div class="form-group">
+        <label for="regionIDs">Select Segmentation:</label>
+         <select  name="Segmentation" id="SegmentationID" class="form-control" disabled>
+          <option value="volvo">Segmentation 1</option>
+          <option value="saab">Segmentation 2</option>
+          <option value="mercedes">Segmentation 3</option>
+          <option value="audi">Segmentation 4</option>
+        </select>
+
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary btn-sm form-control" disabled>Search</button>
+      </div>
+    </form>
+  </div>
+
+
+ <div class="col-sm-4">
+    <h2>Segmentation matcher</h2>
+    <p class="lead">Given a region set, choose the best matching Segmentation.</p>
+    <form method="POST" action="/get">
+      <div class="form-group">
+        <label for="regionIDs">Region IDs:</label><input type="text" name="start" id="regionIDs" class="form-control" />
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary btn-sm form-control" disabled>Search</button>
+      </div>
+    </form>
+  </div>
+
   </div>
 </div>
 
