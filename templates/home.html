@@ -4,10 +4,8 @@
 
 <div class="container">
 
-  <img src="static/images/switchboard.png" style="max-width:100px;float:right;" />
-  <h1 style="margin-bottom:4rem;">Epigenome Switchboard Hub</h1>
+  <img src="static/images/epigenome_switchboard_logo_fade.svg" style="width:100%;" />
 
-  <div class="row">
   <div class="col-sm-4">
     <h2>Search segments</h2>
     <p class="lead">Use a starting point and ending point for a search across records.</p>
@@ -24,18 +22,8 @@
     </form>
   </div>
 
- <div class="col-sm-4">
-    <h2>Query annotations</h2>
-    <p class="lead">Use a starting point and ending point for a search across records.</p>
-    <form method="POST" action="/get">
-      <div class="form-group">
-        <label for="regionIDs">Region IDs:</label><input type="text" name="start" id="regionIDs" class="form-control" disabled />
-      </div>
-      <div class="form-group">
-        <button class="btn btn-primary btn-sm form-control" disabled>Search</button>
-      </div>
-    </form>
-  </div>
+
+  <h1>These additional query types are under construction: </h1>
 
  <div class="col-sm-12">
     <h2>Segmentation filter</h2>
@@ -71,7 +59,20 @@
     </form>
   </div>
 
+
+ <div class="col-sm-4">
+    <h2>Query annotations</h2>
+    <p class="lead">Use a starting point and ending point for a search across records.</p>
+    <form method="POST" action="/get">
+      <div class="form-group">
+        <label for="regionIDs">Region IDs:</label><input type="text" name="start" id="regionIDs" class="form-control" disabled />
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary btn-sm form-control" disabled>Search</button>
+      </div>
+    </form>
   </div>
+
 </div>
 
 {% include 'foot.html' %}
