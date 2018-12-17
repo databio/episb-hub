@@ -6,24 +6,26 @@
 
   <img src="static/images/epigenome_switchboard_logo_fade.svg" style="width:100%;" />
 
-  <div class="col-sm-4">
+  <div class="col-sm-12">
     <h2>Search segments</h2>
     <p class="lead">Use a starting point and ending point for a search across records.</p>
-    <form method="POST" action="/get">
-      <div class="form-group">
+    <form method="POST" action="/get" class="from-inline">
+    <div class="row">
+      <div class="form-group col-md-6">
         <label for="startval">Start Value:</label><input type="text" name="start" id="startval" class="form-control" />
       </div>
-      <div class="form-group">
+      <div class="form-group col-md-6">
         <label for="stopval">Stop Value:</label><input type="text" name="stop" id="stopval" class="form-control" />
       </div>
-      <div class="form-group">
+    </div>
         <button class="btn btn-primary btn-sm form-control">Search</button>
-      </div>
     </form>
   </div>
 
 
-  <h1>These additional query types are under construction: </h1>
+<hr>
+
+  <h1>Additional query types under construction: </h1>
 
  <div class="col-sm-12">
     <h2>Segmentation filter</h2>
@@ -31,13 +33,35 @@
     <form method="POST" action="/get">
       <div class="form-group">
         <label for="regionIDs">Select Segmentation:</label>
-         <select  name="Segmentation" id="SegmentationID" class="form-control" disabled>
+         <select  name="Segmentation" id="SegmentationID" class="form-control">
           <option value="volvo">Segmentation 1</option>
           <option value="saab">Segmentation 2</option>
           <option value="mercedes">Segmentation 3</option>
           <option value="audi">Segmentation 4</option>
         </select>
-
+        <label for="regionIDs">Add Filter Criterion:</label>
+        <div class="row">
+        <div class="form-group col-sm-4">
+         <select name="Experiment" class="form-control">
+          <option value="">-- Select experiment --</option>
+          <option value="ex1">Experiment 1</option>
+          <option value="ex2">Experiment 2</option>
+          <option value="ex3">Experiment 3</option>
+        </select>        
+         </div>
+         <div class="form-group col-sm-4">
+         <select name="Filter" class="form-control" width="50">
+          <option value="">-- Select operator --</option>
+          <option value="ge">&ge;</option>
+          <option value="le">&le;</option>
+          <option value="eq">&equals;</option>
+        </select>
+        </div>
+         <div class="form-group col-sm-4">
+         <label for="regionIDs">Value:</label><input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+        <button type="button" class="btn btn-secondary">Add rule</button>
+        </div>
+        </div>
       </div>
       <div class="form-group">
         <button class="btn btn-primary btn-sm form-control" disabled>Search</button>
@@ -46,28 +70,24 @@
   </div>
 
 
- <div class="col-sm-4">
+ <div class="col-sm-12">
     <h2>Segmentation matcher</h2>
     <p class="lead">Given a region set, choose the best matching Segmentation.</p>
     <form method="POST" action="/get">
-      <div class="form-group">
-        <label for="regionIDs">Region IDs:</label><input type="text" name="start" id="regionIDs" class="form-control" />
-      </div>
-      <div class="form-group">
+      <div class="input-group">
+        <label for="regionIDs">Region IDs:</label><input type="file" name="start" id="regionIDs" class="form-control" />
         <button class="btn btn-primary btn-sm form-control" disabled>Search</button>
       </div>
     </form>
   </div>
 
 
- <div class="col-sm-4">
+ <div class="col-sm-12">
     <h2>Query annotations</h2>
     <p class="lead">Use a starting point and ending point for a search across records.</p>
     <form method="POST" action="/get">
-      <div class="form-group">
+      <div class="input-group">
         <label for="regionIDs">Region IDs:</label><input type="text" name="start" id="regionIDs" class="form-control" disabled />
-      </div>
-      <div class="form-group">
         <button class="btn btn-primary btn-sm form-control" disabled>Search</button>
       </div>
     </form>
