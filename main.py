@@ -1,6 +1,5 @@
 import json, urllib, os
 from flask import Flask, render_template, request, redirect, jsonify
-
 app = Flask(__name__)
 
 es_host = '172.17.0.1'
@@ -56,7 +55,7 @@ def check_start_stop(start,stop):
   if not stop:
     stop = '0'
   if (stop <= start):
-    return render_template("error.html", errmsg="STOP value is greater than or equal to START value")
+    return render_template("error.html", errmsg="STOP value must be greater than or equal to START value")
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0',port=8888,debug=True)
