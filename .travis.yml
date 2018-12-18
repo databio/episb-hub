@@ -4,7 +4,10 @@ services:
   - docker
 
 before_install:
-  - echo $DOCKER_PASSWORD | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - sudo pip install --upgrade pip
+  - pip install --user awscli
+  - export PATH=$PATH:$HOME/.local/bin
+  - echo $DOCKER_PASSWORD | docker login -u "$DOCKER_USERNAME" --password-stdin 
 
 install:
     docker build --no-cache -t databio/episb-hub:tiangolo . || exit 1;
