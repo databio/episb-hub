@@ -1,3 +1,8 @@
+branches:
+  only:
+  - master
+  - dev
+
 language: bash
 
 services:
@@ -10,6 +15,19 @@ before_install:
   - echo $DOCKER_PASSWORD | docker login -u "$DOCKER_USERNAME" --password-stdin 
 
 install:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker build --no-cache -t databio/episb-hub:tiangolo . || exit 1;
     docker push databio/episb-hub:tiangolo || exit 1;
     aws sqs send-message --queue-url 'https://queue.amazonaws.com/474683445819/episb-updates' --message-body $TRAVIS_BRANCH || exit 1;
+    fi
+  - if [ "$TRAVIS_BRANCH" == "dev" ]; then
+    docker build --no-cache -t databio/episb-hub:dev . || exit 1;
+    docker push databio/episb-hub:dev || exit 1;
+    fi
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+    recipients:
+    - nmagee@virginia.edu
