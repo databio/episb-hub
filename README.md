@@ -96,7 +96,13 @@ $ docker build -t <docker image>:<tag optional> .
 2. Run the container from the image you just built:
 
 ```
-$ docker run -d -p 80:80 <docker image>:<tag>
+$ docker run -d -p 80:80 --rm --name episb-hub <docker image>:<tag>
 ```
 
 3. Interact with and preview the site: http://localhost/ 
+
+4. When done, stop the container:
+
+```
+$ docker stop episb-hub
+```
