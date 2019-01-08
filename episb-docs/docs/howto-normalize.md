@@ -1,5 +1,6 @@
-# How-to normalize interval data
+# How to normalize interval data
 
+A typical study of genome signals will yield a set of genomic intervals, or regions, typically stored in a `BED` file. The epigenome switchboard aggregates this type of data in raw form, but one of its most important tasks is to *normalize* the data into a common reference to simplify integrative analysis.
 
 ## Why do we need to normalize genome interval data?
 
