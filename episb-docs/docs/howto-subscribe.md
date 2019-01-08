@@ -1,4 +1,4 @@
-## How-to subscribe to data providers
+## How to subscribe to additional data providers
 
 A hub is a query server that is able to integrate data across any data providers that it links to. In general, hubs will be configured to retrieve data from a few public data providers, but you may be interested in linking your hub to a new data provider, which could be either public or private.
 
