@@ -7,7 +7,7 @@ es_host = '172.17.0.1'
 @app.route('/segment/<start>/<stop>')
 def render_segments(start,stop):
   check_start_stop(start,stop)
-  url = "http://" + es_host + ":8080/episb-rest-server/get/fromSegment/" + start + "/" + stop
+  url = "http://" + es_host + ":8080/episb-provider/get/fromSegment/" + start + "/" + stop
   try:
     url_req = urllib.urlopen(url)
     query_json = json.load(url_req)
@@ -17,7 +17,7 @@ def render_segments(start,stop):
 
 @app.route('/api/v1/segment/<start>/<stop>')
 def render_segments_json(start,stop):
-  url = "http://" + es_host + ":8080/episb-rest-server/get/fromSegment/" + start + "/" + stop
+  url = "http://" + es_host + ":8080/episb-provider/get/fromSegment/" + start + "/" + stop
   try:
     url_req = urllib.urlopen(url)
     query_json = json.load(url_req)
