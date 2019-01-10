@@ -72,4 +72,26 @@ For example,
 }
 ```
 
-Annotations like in the "annotations" index in Elastic.
+Annotations live in the "annotations" index in Elastic.
+
+## Design interface ##
+
+A "design interface" tells a user (an episb-hub, for example), what segmentations the episb-provider is able to serve. The document describes the name of the segmentation, some auxiliary information and tells the hub how to get the annotation value and the range it can take.
+
+For example,
+
+```
+{
+    "providerName": "episb-provider",
+    "providerDescription": "sample segmentation provider",
+    "segmentationName": "testsegmentation",
+    "experimentName": "testexperiment",
+    "cellType": "sample cell type",
+    "description": "sample experiment description",
+    "annotationKey": "value",
+    "annotationRangeStart": "0",
+    "annotationRangeEnd": "1"
+}
+```
+
+Interface documents live in the "interfaces" index in Elastic search.
