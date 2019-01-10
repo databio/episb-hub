@@ -15,8 +15,8 @@ nav:
     - Build a data provider: howto-build-provider.md
     - Build a hub: howto-build-hub.md
   - Reference:
-		- Data organization: data-organization.md
-		- Data provider API: provider-api.md
+    - Data organization: data-organization.md
+    - Data provider API: provider-api.md
     - Hub API: hub-api.md
     - FAQ: faq.md
     - Support: support.md
