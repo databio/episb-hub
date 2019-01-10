@@ -1,4 +1,4 @@
-import json, urllib, os
+import json, urllib2, os
 from flask import Flask, render_template, request, redirect, jsonify
 app = Flask(__name__)
 
@@ -9,20 +9,20 @@ def render_segments(start,stop):
   check_start_stop(start,stop)
   url = "http://" + es_host + ":8080/episb-provider/get/fromSegment/" + start + "/" + stop
   try:
-    url_req = urllib.urlopen(url)
+    url_req = urllib2.urlopen(url)
     query_json = json.load(url_req)
     return render_template("response.html", query_json=query_json, start=start, stop=stop)
-  except urllib.error.URLError as e:
+  except urllib2.URLError as e:
     print(e.reason)
 
 @app.route('/api/v1/segment/<start>/<stop>')
 def render_segments_json(start,stop):
   url = "http://" + es_host + ":8080/episb-provider/get/fromSegment/" + start + "/" + stop
   try:
-    url_req = urllib.urlopen(url)
+    url_req = urllib2.urlopen(url)
     query_json = json.load(url_req)
     return jsonify(query_json)
-  except urllib.error.URLError as e:
+  except urllib2.URLError as e:
     print(e.reason)
 
 @app.route('/api')
