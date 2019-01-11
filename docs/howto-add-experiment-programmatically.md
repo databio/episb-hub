@@ -2,11 +2,9 @@
 
 The discussion below makes the following assumptions:
 
-<ul>
-<li>Annotations cannot exist independently in the system - they must be connected to existing segments withni segmentations</li>
-<li>The user of the "add experiment" API "knows" the name of the segmentation to use</li>
-<li>Right now, for each chr/start/stop (range) associated with an annotation value, only an **exact** match within a segmentation can be used (in other words, the system still does not know how to make partial matches)</li>
-</ul>
+* Annotations cannot exist independently in the system - they must be connected to existing segments within segmentations
+* The user of the "add experiment" API "knows" the name of the segmentation to use
+* Right now, for each chr/start/stop (range) associated with an annotation value, only an **exact** match within a segmentation can be used (in other words, the system still does not know how to make partial matches)
 
 With the above being said, the REST API point to use is:
 
@@ -15,10 +13,9 @@ With the above being said, the REST API point to use is:
 ```
 
 where 
-<ul>
-<li>"experimentName" is the desired name of the experiment</li>
-<li>"segmentationName" is the name of the segmentation to search for matches</li>
-</ul>
+
+* "experimentName" is the desired name of the experiment
+* "segmentationName" is the name of the segmentation to search for matches
 
 The above is a POST multi-form method that expects within its body the following:
 ```
@@ -34,17 +31,13 @@ where "segmentationName" is the name of the segmentation to get all the segments
 
 The full workflow to add an experiment, therefor is:
 
-<ul>
-<li>Use "/segments/get/BySegmentationName/:segmentationName" to "pull in" all the segments for a segmentation</li>
-<li>Read experiment BED file and extract chr/start/stop/annotation_value information from it</li>
-<li>Search all downloaded segments for an exact match</li>
-<ul>
-<li>if a match is found, add annotation_value\<tab\>segmentID to body of the POST form to use next</li>
-<li>if a match is NOT found, either skip adding annotation or add "dummy" annotation</li>
-</ul>
-<li>When the whole experiment BED file is processed, use resulting multi-form and /experiments/add/preformatted/:experimentName/:segmentationName to add annotations to episb-system</li>
-<li>Finally, we need to "officialize" the addition of the experiment by adding a "design interface" to the system, describing the experiment/segmentation pairing (see below)</li>
-</ul>
+* Use "/segments/get/BySegmentationName/:segmentationName" to "pull in" all the segments for a segmentation
+* Read experiment BED file and extract chr/start/stop/annotation_value information from it
+* Search all downloaded segments for an exact match
+    - if a match is found, add annotation_value\<tab\>segmentID to body of the POST form to use next
+    - if a match is NOT found, either skip adding annotation or add "dummy" annotation
+* When the whole experiment BED file is processed, use resulting multi-form and /experiments/add/preformatted/:experimentName/:segmentationName to add annotations to episb-system
+* Finally, we need to "officialize" the addition of the experiment by adding a "design interface" to the system, describing the experiment/segmentation pairing (see below)
 
 The REST API point to add the design interface is:
 ```
@@ -64,7 +57,7 @@ The actual code to run would be:
 SBT_OPTS="-Xmx16G" sbt "runMain com.github.oddodaoddo.sheffieldapp.ProcessAnnotationNonHeadered --segname="segmentation name" --expname="my experiment name" --readfrom=/home/ognen/"bed file containing experiment" --writeto=/tmp/output.txt --column=<column to get annotation value from>"
 ```
 
-For example, to load an experiment that lives /home/ognen/wgEncodeBroadHmmGm12878HMM.bed, using the "encodebroadhmm" segmentation, run:
+For example, to load an experiment that lives in /home/ognen/wgEncodeBroadHmmGm12878HMM.bed, using the "encodebroadhmm" segmentation, run:
 ```
 SBT_OPTS="-Xmx16G" sbt "runMain com.github.oddodaoddo.sheffieldapp.ProcessAnnotationNonHeadered --segname=encodebroadhmm --expname="EncodeBroadExperiment" --readfrom=/home/ognen/wgEncodeBroadHmmGm12878HMM.bed --writeto=/tmp/output.txt --column=4"
 ```

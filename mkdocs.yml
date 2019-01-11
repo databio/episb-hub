@@ -9,6 +9,7 @@ nav:
   - Getting started:
     - Introducing episb: README.md
   - How-to guides:
+    - Add an experiment to EPISB: howto-add-experiment-programmatically.md
     - Query existing data providers: howto-query-provider.md
     - Add a new provider to a hub: howto-subscribe.md
     - Normalize to a segmentation: howto-normalize.md
