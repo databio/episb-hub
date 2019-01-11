@@ -3,7 +3,7 @@ site_logo: img/epigenome_switchboard_logo_dark.svg
 site_url: http://code.databio.org/episb/
 
 repo_url: http://github.com/databio/episb-hub
-# edit_uri: edit/master/episb-docs/docs/
+edit_uri: edit/dev/docs/
 
 nav:
   - Getting started:
