@@ -1,5 +1,11 @@
 # FAQ
 
+### What kind of data is served by the *epigenome switchboard*?
+
+> The data is anything that can be represented as collections of genomic regions. Each hub can connect to one or more data providers, which can mix both public and private data sources, enabling users to integrate data from multiple sources and to place internal data in the context of public resources for analysis.
+
+
+
 ### What is the difference between a `Segment` and a `Region`?
 
 > A `Segment` is simply a `Region` that belongs to a `Segmentation`. In the back-end of the segmentation provider, it is assigned a `SegmentID` and can be used to [Normalize raw genome intervals](/normalize.md) into a Segmentation.

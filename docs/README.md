@@ -1,6 +1,9 @@
 # Epigenome switchboard
 
-The epigenome switchboard is a web app that enables scientists to integrate large-scale epigenome data across databases via an API. It is built by a collection of web servers and data resources that together form a network for analysis of epigenome data. The data contained in the network is anything that can be represented as collections of genomic regions. The switchboard provides hubs that allow users to interact with the data through RESTful API endpoints, or via interactive web interface. Each hub can connect to one or more data providers, which can mix both public and private data sources, enabling users to integrate data from multiple sources and to place internal data in the context of public resources for analysis.
+**The epigenome switchboard is a web app that enables scientists to integrate large-scale epigenome data across databases via an API.**
+
+It is made up of a series of *data providers* and *data hubs* that together provide fast web and API access to data from many different public data sources. Via a [subscription interface](/howto-subscribe/), users can add new public or private data providers into their switchboards, enabling them to easily integrate their own data with other curated data resources via the hub.
+
 
 
 <div class="image" style="float:right">
