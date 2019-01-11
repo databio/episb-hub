@@ -8,7 +8,7 @@ Use documentation can be found at http://databio.org/episb
 FLASK_APP="main.py" flask run
 ```
 
-Point browser to http://localhost:5000
+Point browser to http://localhost:8888
 
 
 ## Running the app in a container
@@ -34,6 +34,10 @@ $ docker run -d -p 80:80 --rm --name episb-hub <docker image>:<tag>
 ```
 $ docker stop episb-hub
 ```
+
+## ElasticSearch
+
+Note that this site requires ElasticSearch indices as a data provider for regions, experiments, segmentations, etc. Flask looks for ES indices at port 8080 of the localhost.
 
 
 ## Docs:
