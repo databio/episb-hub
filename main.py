@@ -2,7 +2,7 @@ import json, urllib2, os
 from flask import Flask, render_template, request, redirect, jsonify
 app = Flask(__name__)
 
-es_host = '172.17.0.1'
+es_host = '10.250.124.183'
 
 @app.route('/region/<start>/<stop>')
 def render_segments(start,stop):
