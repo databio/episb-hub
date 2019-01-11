@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 es_host = '172.17.0.1'
 
-@app.route('/segment/<start>/<stop>')
+@app.route('/region/<start>/<stop>')
 def render_segments(start,stop):
   check_start_stop(start,stop)
   url = "http://" + es_host + ":8080/episb-provider/get/fromSegment/" + start + "/" + stop
@@ -15,7 +15,7 @@ def render_segments(start,stop):
   except urllib2.URLError as e:
     print(e.reason)
 
-@app.route('/api/v1/segment/<start>/<stop>')
+@app.route('/api/v1/region/<start>/<stop>')
 def render_segments_json(start,stop):
   url = "http://" + es_host + ":8080/episb-provider/get/fromSegment/" + start + "/" + stop
   try:
@@ -42,7 +42,7 @@ def get_segments():
   start = request.form.get("start")
   stop = request.form.get("stop")
   check_start_stop(start,stop)
-  url = "http://episb.org/segment/" + start + "/" + stop
+  url = "http://episb.org/region/" + start + "/" + stop
   return redirect(url, code=302)
 
 @app.route('/')
