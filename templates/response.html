@@ -4,15 +4,14 @@
 
 <div class="container">
 
-  <h1>Segment Results</h1>
+  <h1>Region Results</h1>
 
   <div style="margin-bottom:6rem;">
     <table class="table">
 
       <tr></tr>
       <td>Found:</td>
-      <td>{{query_json.hits.total}}</td>
-      <td><a href="http://episb.org/api/v1/segment/{{start}}/{{stop}}"><button style="margin-right:1em;" class="btn btn-xs btn-primary">API</button></a>  <code>http://episb.org/api/v1/segment/{{start}}/{{stop}}</code></td>
+      <td><a href="http://episb.org/api/v1/region/{{start}}/{{stop}}"><button style="margin-right:1em;" class="btn btn-xs btn-primary">API</button></a>  <code>http://episb.org/api/v1/region/{{start}}/{{stop}}</code></td>
 
     </table>
   </div>
@@ -24,23 +23,19 @@
     <table class="table table-hover table-sm">
       <thead>
         <tr>
-          <th>Index</th>
+          <th>SegID</th>
           <th>SegChr</th>
           <th>SegStart</th>
           <th>SegEnd</th>
-          <th>Protocol</th>
-          <th>CellType</th>
         </tr>
       </thead>
       <tbody id="retTable">
-      {% for index in query_json.hits.hits %}
+      {% for index in query_json.result %}
         <tr>
-          <td>{{ index._id }}</td>
-          <td>{{ index._source.Segment.segChr }}</td>
-          <td>{{ index._source.Segment.segStart }}</td>
-          <td>{{ index._source.Segment.segEnd }}</td>
-          <td>{{ index._source.experiment.experimentProtocol }}</td>
-          <td>{{ index._source.experiment.experimentCellType }}</td>
+          <td>{{ index.segID }}</td>
+          <td>{{ index.segChr }}</td>
+          <td>{{ index.segStart }}</td>
+          <td>{{ index.segEnd }}</td>
         </tr>
       {% endfor %}
       </tbody>
