@@ -39,12 +39,14 @@
     <p class="lead">Starting with a Segmentation, filter to a biologically relevant subset of regions.</p>
     <form method="POST" action="/get">
       <div class="form-group">
-        <label for="regionIDs">Select Segmentation:</label>
-         <select  name="Segmentation" id="SegmentationID" class="form-control">
-          <option value="volvo">Segmentation 1</option>
-          <option value="saab">Segmentation 2</option>
-          <option value="mercedes">Segmentation 3</option>
-          <option value="audi">Segmentation 4</option>
+        <label for="regionIDs">Segmentation:</label>
+         <select name="Segmentation" id="SegmentationID" class="form-control">
+          <option value="" selected> - Select a Segmentation - </option>
+
+          {% for index in segmentation_json.result %}
+          <option value="{{ index.segmentationName }}">{{ index.segmentationName }}</option>
+          {% endfor %}
+
         </select>
         <label for="regionIDs">Add Filter Criterion:</label>
         <div class="input-group row">

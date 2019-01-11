@@ -25,6 +25,16 @@ def render_segments_json(start,stop):
   except urllib2.URLError as e:
     print(e.reason)
 
+@app.route('/api/v1/segmentations')
+def render_segmentations():
+  url = "http://" + es_host + ":8080/episb-provider/segmentations/get/all"
+  try:
+    url_req = urllib2.urlopen(url)
+    query_json = json.load(url_req)
+    return jsonify(query_json)
+  except urllib2.URLError as e:
+    print(e.reason)
+
 @app.route('/api')
 def render_api():
   return render_template("api.html")
@@ -47,7 +57,13 @@ def get_segments():
 
 @app.route('/')
 def index():
-  return render_template("home.html")
+  url = "http://" + es_host + ":8080/episb-provider/segmentations/get/all"
+  try:
+    url_req = urllib2.urlopen(url)
+    segmentation_json = json.load(url_req)
+    return render_template("home.html", segmentation_json=segmentation_json)
+  except urllib2.URLError as e:
+    print(e.reason)
 
 def check_start_stop(start,stop):
   if not start:
