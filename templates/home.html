@@ -20,10 +20,13 @@
 
   <div class="collapse col-sm-6 show" id="retrieveRegions" data-parent="#queryTypes">
     <h2>Retrieve regions</h2>
-    <p class="lead">Use start and end coordinates to retrieve regions.</p>
+    <p class="lead">Use chromosome, start and end coordinates to retrieve regions.</p>
     <form method="POST" action="/get" class="from-inline">
     <div class="row">
-      <div class="form-group col-md-6">
+			<div class="form-group col-md-6">
+        <label for="chrom">Chromosome:</label><input type="text" name="chrom" id="chrom" class="form-control" />
+      </div>
+      <div class="form-group col-md-7">
         <label for="startval">Start Value:</label><input type="text" name="start" id="startval" class="form-control" />
       </div>
       <div class="form-group col-md-6">
@@ -94,7 +97,7 @@
         <label for="regionIDs">Region IDs:</label><input type="text" name="start" id="regionIDs" class="form-control" disabled />
         <button class="btn btn-primary btn-sm form-control" disabled>Search</button>
       </div>
-    </form>
+    /form>
   </div>
 
 </div>

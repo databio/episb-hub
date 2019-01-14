@@ -2,22 +2,36 @@ import json, urllib2, os
 from flask import Flask, render_template, request, redirect, jsonify
 app = Flask(__name__)
 
-es_host = '10.250.124.183'
+# uncomment the following five lines if running on localhost
+# with episb-provider running in default setup
+#'es_host':'127.0.0.1',
+#'es_path':'',
+#'es_port':'8080',
+#'flask_host':'127.0.0.1',
+#'flask_port':'5000'
 
-@app.route('/region/<start>/<stop>')
-def render_segments(start,stop):
+# production mode settings on "live" episb.org server
+'es_host':'10.250.124.183',
+'es_path':'/episb-provider',
+'es_port':'8080',
+'flask_host':'episb.org',
+'flask_port':''
+
+@app.route('/region/<chrom>/<start>/<stop>')
+def render_segments(chrom,start,stop):
   check_start_stop(start,stop)
-  url = "http://" + es_host + ":8080/episb-provider/get/fromSegment/" + start + "/" + stop
+  url = "http://" + es_host + ":" + es_port + es_path + "/get/fromSegment/" + chrom + "/" + start + "/" + stop
+  print(url)
   try:
     url_req = urllib2.urlopen(url)
     query_json = json.load(url_req)
-    return render_template("response.html", query_json=query_json, start=start, stop=stop)
+    return render_template("response.html", query_json=query_json, chrom=chrom,  start=start, stop=stop)
   except urllib2.URLError as e:
     print(e.reason)
 
-@app.route('/api/v1/region/<start>/<stop>')
-def render_segments_json(start,stop):
-  url = "http://" + es_host + ":8080/episb-provider/get/fromSegment/" + start + "/" + stop
+@app.route('/api/v1/region/<chrom>/<start>/<stop>')
+def render_segments_json(chrom,start,stop):
+  url = "http://" + es_host + ":" + es_port + es_path + "/get/fromSegment/" + chrom + "/" + start + "/" + stop
   try:
     url_req = urllib2.urlopen(url)
     query_json = json.load(url_req)
@@ -27,7 +41,7 @@ def render_segments_json(start,stop):
 
 @app.route('/api/v1/segmentations')
 def render_segmentations():
-  url = "http://" + es_host + ":8080/episb-provider/segmentations/get/all"
+  url = "http://" + es_host + es_port + es_path + "/segmentations/get/all"
   try:
     url_req = urllib2.urlopen(url)
     query_json = json.load(url_req)
@@ -49,15 +63,16 @@ def render_subscriptions():
 
 @app.route("/get", methods=["GET","POST"])
 def get_segments():
+  chrom = request.form.get("chrom")
   start = request.form.get("start")
   stop = request.form.get("stop")
   check_start_stop(start,stop)
-  url = "http://episb.org/region/" + start + "/" + stop
+  url = "http://" + flask_host + ":" + flask_port + "/region/" + chrom + "/" + start + "/" + stop
   return redirect(url, code=302)
 
 @app.route('/')
 def index():
-  url = "http://" + es_host + ":8080/episb-provider/segmentations/get/all"
+  url = "http://" + es_host + ":" + es_port + es_path + "/segmentations/get/all"
   try:
     url_req = urllib2.urlopen(url)
     segmentation_json = json.load(url_req)
@@ -74,4 +89,11 @@ def check_start_stop(start,stop):
     return render_template("error.html", errmsg="STOP value must be greater than or equal to START value")
 
 if __name__ == '__main__':
-  app.run(host='0.0.0.0',port=8888,debug=True)
+  from argparse import ArgumentParser
+  parser = ArgumentParser()
+  parser.add_argument('-m')
+  args = parser.parse_args()
+
+  run_env = args.m
+
+  app.run(host='0.0.0.0',port=8888,runenv=run_env,debug=True)
