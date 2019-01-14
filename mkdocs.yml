@@ -15,7 +15,7 @@ nav:
     - Normalize to a segmentation: howto-normalize.md
     - Build a data provider: howto-build-provider.md
     - Build a hub: howto-build-hub.md
-    - Access data using R or python: howto-use-api.md
+    - Access data using R or python: howto-use-episb-API-calls.md
   - Reference:
     - Data organization: data-organization.md
     - Data provider API: provider-api.md
