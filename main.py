@@ -4,17 +4,17 @@ app = Flask(__name__)
 
 # uncomment the following five lines if running on localhost
 # with episb-provider running in default setup
-#es_host=127.0.0.1',
-#es_path='',
-#es_port='8080',
-#flask_host='127.0.0.1',
+#es_host=127.0.0.1'
+#es_path=''
+#es_port='8080'
+#flask_host='127.0.0.1'
 #flask_port='5000'
 
 # production mode settings on "live" episb.org server
-es_host='10.250.124.183',
-es_path='/episb-provider',
-es_port='8080',
-flask_host='episb.org',
+es_host='10.250.124.183'
+es_path='/episb-provider'
+es_port='8080'
+flask_host='episb.org'
 flask_port=''
 
 @app.route('/region/<chrom>/<start>/<stop>')
