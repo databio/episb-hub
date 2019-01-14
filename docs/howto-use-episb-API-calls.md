@@ -176,9 +176,27 @@ A typical successful reply may be:
 
 ## Getting a single region based on a region ID ##
 
-This call would take as a parameter the region ID and return a region's chromosome and positional coordinates.
+This call takes as a parameter the region ID and returns a region's chromosome and positional coordinates.
+```
+http://episb.org:8080/segments/find/BySegmentID/:segmentID
+```
+where :segmentID is something like "TestSegmentation::2a43bb7b-d35d-4193-8941-e8a2d232ee95"
 
-*to be implemented*
+A typical reply would be:
+```
+{
+    "result":
+        [
+            {
+                "segID":"TestSegmentation::2a43bb7b-d35d-4193-8941-e8a2d232ee95",
+                "segChr":"1",
+                "segStart":22137,
+                "segEnd":22937
+            }
+        ],
+        "error":"None"
+}
+```
 
 ## Getting all annotation values for an experiment ##
 
