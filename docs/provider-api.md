@@ -2,41 +2,343 @@
 
 The data provider API will describe the link between a *provider* and a *hub*. One aspect of this will be the `provider design interface`. Discussion on this interface can be found in this issue: [https://github.com/databio/episb-provider/issues/6](https://github.com/databio/episb-provider/issues/6)
 
+Below we discuss different scenarios that may come up when writing tools relying on the Episb provider API calls. Through these scenarios, the usage of the API calls is demonstrated.
 
-*/segmentations/get/ByNameWithSegments/:segmentationName?compressed=true/false (GET)*
+## What is covered in this document ##
 
-Returns a segmentation from elastic search (a list of segments with their IDs)
+During this discussion a full URL is used where the episb-provider is running by default (http://episb.org:8080/episb-provider). Depending on how an individual installation is set up, this portion of the URL may differ from server to server.
 
-*/experiments/add/preformatted/:experimentName/:segmentationName (POST)*
+In addition, all of the API calls return either a JsonError or a JsonSuccess object, with a general structure as follows:
 
-Takes in a file formatted such as: "annotation_value\<tab\>segmentation_name::segment_id"
+JsonError:
+```
+{
+    "result": "None",
+    "error" : <error message>
+}
+```
+JsonSuccess:
+```
+{
+    "result": <some result>,
+    "error": "None"
+}
+```
 
-Right now we are not verifying much. It is the responsibility of the caller to make sure the segmentation exists.
-The file to feed this API point can be produced by running the following from episb-bed-json-converter suite of programs:
+## Getting a list of all design interfaces stored in the provider ##
 
-cd ../episb-bed-json-converter
-SBT_OPTS="-Xmx12G" sbt "runMain com.github.oddodaoddo.sheffieldapp.ProcessAnnotationNonHeadered --segname=name_of_segmentation --expname=name_of_experiment --readfrom=path_to_experiment_bed_file --writeto=path_to_output_file --column=colummn_to_use_for_annotation_value"
+The following call is used to get all the design interfaces stored in the provider.
+```
+GET /segmentations/get/all
+```
 
-the SBT_OPTS above is optional but recommended.
+If the call was successful, the following JsonSuccess structure will be returned (for example):
 
-To call the API point, create a following file (e.g. /tmp/multipart-message.data
+```
+{"result":
+    [
+        {
+            "providerName":"episb-provider",
+            "providerDescription":"sample segmentation provider",
+            "segmentationName":"broadhmm",
+            "experimentName":"BroadHMMExperiment",
+            "cellType":"sample cell type",
+            "description":"sample experiment description",
+            "annotationKey":"value",
+            "annotationRangeStart":"0",
+            "annotationRangeEnd":"0"
+        },
+        {
+            "providerName":"episb-provider",
+            "providerDescription":"sample segmentation provider",
+            "segmentationName":"testsegmentation",
+            "experimentName":"testexperiment",
+            "cellType":"sample cell type",
+            "description":"sample experiment description",
+            "annotationKey":"value",
+            "annotationRangeStart":"0",
+            "annotationRangeEnd":"0"}]
+    ],
+    "error":"None"
+}
+```
 
---a93f5485f279c0
-content-disposition: form-data; name="expfile"; filename="exp.out"
+A list of segmentation names can be extracted by traversing the JSON list in the "result" field.
 
-Then 'cat path_to_output_file >> /tmp/multipart-message.data'
+Example:
+```
+import httplib
+conn = httplib.HTTPConnection("localhost",8080)
+conn.request("GET", "/segmentations/get/all")
+r1 = conn.getresponse()
+print(r1.read())
+```
+would produce something like:
+```
+'{"result":[{"providerName":"episb-provider","providerDescription":"sample segmentation provider","segmentationName":"testsegmentation","experimentName":"testexperiment","cellType":"sample cell type","description":"sample experiment description","annotationKey":"value","annotationRangeStart":"0","annotationRangeEnd":"0"},{"providerName":"episb-provider","providerDescription":"sample segmentation provider","segmentationName":"broadhmm","experimentName":"BroadHMMExperiment","cellType":"sample cell type","description":"sample experiment description","annotationKey":"value","annotationRangeStart":"0","annotationRangeEnd":"0"}],"error":"None"}'
+```
 
-Then 'echo "--a93f5485f279c0--" >> /tmp/multipart-message.data'
+## Getting a list of all region IDs within a segmentation ##
 
-Finally, test the API point by doing the following:
+Once a segmentation name is known, a list of all region IDs within that segmentation can be obtained by calling:
+```
+GET /segmentations/get/ByName/:segName
+```
 
-curl http://localhost:8080/experiments/add/preformatted/testexperiment/testsegmentation --data-binary @/tmp/multipart-message.data -X POST -i -H "Content-Type: multipart/form-data; boundary=a93f5485f279c0"
+An example result may be:
 
-if you have the right segmentation name - it will work.
+```
+{
+    "result": 
+        {
+            "segmentationName":"BroadHMM",
+            "segmentList":
+            [
+                "BroadHMM::86c7717e-7259-472c-994f-ab24926d7cd2",
+                "BroadHMM::ecd009f8-97e7-4d1e-90fc-d9ca607a05af",
+                "BroadHMM::c7e8d5c1-040e-4e9b-8e85-57388c690734",
+                "BroadHMM::33c8f670-d4bf-4499-a7ca-59a82ca833e7",
+                "BroadHMM::ff6f2e56-e309-457a-82c3-9b61d099c2a0",
+                "BroadHMM::0087e086-11e3-419f-9550-7b2c3a82e3cc",
+                "BroadHMM::0241364a-733d-46ec-8197-341f735a7944"
+            ]
+        },
+    "error": "None"
+}            
+```
 
-The way the output file is created is via pulling the entire segmentation into memory and reorganizing it into a hash table indexed by chr (dividing it into chr buckets). The it reads the experiment file into memory and goes through it line by line. For each line it extracts the chr/start/stop components and the annotation value at the "columnt" that was passed to it. It will then search for an EXACT match in the segmentation and if it finds it, it will get the segment ID from the segmentatoon, include the annotation value and that ID into the output file. This is the file you upload to create an experiment.
+Notice that a segment ID is a concatentation of the name of segmentation_name :: UUID assigned at moment of segment ID creation.
 
-*/segmentations/update (POST)*
+**Input**: :segName is the name of a particular segmentation, for example "BroadHMM".
 
-The request body of this API point should contain a design interface describing an experiment served by the server.
+Example:
+```
+import httplib
+conn = httplib.HTTPConnection("localhost",8080)
+conn.request("GET", "/segmentations/get/ByName/BroadHMM")
+r1 = conn.getresponse()
+print(r1.read())
+```
+would produce something like:
+```
+'{"result":[{"segmentationName":"BroadHMM","segmentList":["BroadHMM::d9d7d23b-658c-43c3-a34a-94939b6403c9","BroadHMM::81f79f42-a06d-44a2-80d1-aed913a7442c","BroadHMM::3433568d-bbb7-4c41-be7e-0b00dd48f096","BroadHMM::365d4660-85af-4841-8643-d2b7f8eb2839","BroadHMM::f9650174-71fa-4df5-944e-9ba9cf6402a8","BroadHMM::525bca34-44df-4c78-be56-558915f603fd","BroadHMM::a0a6d44d-7820-47b1-a70e-f56d0abc0d95","BroadHMM::cef16c99-8d4f-4a92-9a10-0163e38014c3","BroadHMM::177f1523-1e47-47b9-8b11-1f548b7beaa2","BroadHMM::c93addab-a323-456b-990c-9eacdb3b896e","BroadHMM::92034f77-9462-4d23-ae8e-3bacfbcce507","BroadHMM::cf1d7a33-c197-4be8-beff-b317a5234e75","BroadHMM::1dc51ea0-0fea-4ef8-b217-3cc64e98be10","BroadHMM::5acb2c06-fb6d-436f-9894-f339c219241e","BroadHMM::808010d6-6676-4731-9962-3691e6ca392f"]}],"error":"None"}'
+```
+
+## Getting all the regions (full info - chr/start/stop) within a segmentation ##
+
+To get the full information on all regions within a segmentation (segment ID, chromosome, start and stop position coordinates), the following API may be used:
+
+```
+GET /segments/get/BySegmentationName/:segName
+```
+
+A successful call will return a structure such as:
+
+```
+{
+    "result": 
+    [
+        {
+            "segID":"BroadHMM::64443fc1-b098-4f46-9fbf-e58bfbd3fa98",
+            "segChr":"X",
+            "segStart":153940806,
+            "segEnd":153941806
+        },
+        {
+            "segID":"BroadHMM::00402663-7916-4c7f-9a2d-15b7c33fb1d4",
+            "segChr":"X",
+            "segStart":153941806,
+            "segEnd":153943006
+        },
+        {
+            "segID":"BroadHMM::258a0c7d-0070-4c22-8c97-5cb2dc59531e",
+            "segChr":"X",
+            "segStart":153943006,
+            "segEnd":153943206
+        }
+    ],
+    "error": "None"
+}       
+```
+
+The above call may be of help when adding an experiment to the provider. The algorithm would include pulling in all the regions for a segmentation, reading the experiment .bed file line by line and searching the segmentation for the matching region.
+
+**Input**: :segName is the name of the segmentation. For example, "BroadHMM".
+
+Example:
+```
+import httplib
+conn = httplib.HTTPConnection("localhost",8080)
+conn.request("GET", "/segments/get/BySegmentationName/BroadHMM")
+r1 = conn.getresponse()
+print(r1.read())
+```
+would produce something like:
+```
+'{"result":[{"segID":"BroadHMM::3433568d-bbb7-4c41-be7e-0b00dd48f096","segChr":"X","segStart":153889606,"segEnd":153890206},{"segID":"BroadHMM::30f54ade-c14e-43be-b37d-2349f7960809","segChr":"X","segStart":153952006,"segEnd":153953406},{"segID":"BroadHMM::826f9efe-0931-48a5-b2fc-a6117ad69e28","segChr":"X","segStart":153962406,"segEnd":153962606},{"segID":"BroadHMM::6093072b-538b-4668-ab5c-3b9bad6a8ef8","segChr":"X","segStart":153978406,"segEnd":153979206},{"segID":"BroadHMM::be702e3c-f568-47fb-9717-068d4e98fcb4","segChr":"X","segStart":153988606,"segEnd":153989806},{"segID":"BroadHMM::9098ae95-6d7f-42e5-bb0b-872c9fff599b","segChr":"X","segStart":153992406,"segEnd":153992606},{"segID":"BroadHMM::40bd6776-a35b-4c0a-88e2-4a4f5c086d39","segChr":"X","segStart":154012406,"segEnd":154028606},{"segID":"BroadHMM::d7a25dae-3031-4ebf-a70a-9cd6cea196f8","segChr":"X","segStart":154029206,"segEnd":154029806},{"segID":"BroadHMM::12fbd660-eec5-4394-b662-3d37317d8aa8","segChr":"X","segStart":154055406,"segEnd":154055806},{"segID":"BroadHMM::01237fc3-e992-4e88-bb80-a7ec32538b5b","segChr":"X","segStart":154057206,"segEnd":154057806},{"segID":"BroadHMM::85904995-9c0c-4817-8345-142cf4f5dab2","segChr":"X","segStart":154112206,"segEnd":154113006},{"segID":"BroadHMM::8efb2e19-1428-4fdc-8b50-ac48143c6824","segChr":"X","segStart":154113006,"segEnd":154113606}],"error":"None"}'
+```
+
+## Getting all the regions that are within a certain coordinate position range on a chromosome ##
+
+To do the above, the following API call may be used:
+```
+GET /segments/get/fromSegment/:chr/:start/:end
+```
+
+A typical successful reply may be:
+```
+{
+    "result":
+    [
+        {
+            "segID":"TestSegmentation::deba61e4-6cd9-4630-91dc-8c5e8e9b34e6",
+            "segChr":"1",
+            "segStart":11737,
+            "segEnd":11937
+        },
+        {
+            "segID":"TestSegmentation::20d49fb7-df63-46af-aa07-5b9fad7f9f5a",
+            "segChr":"1",
+            "segStart":20337,
+            "segEnd":22137
+        },
+        {
+            "segID":"TestSegmentation::5e106bd4-de35-4f34-b607-d03800b84ab4",
+            "segChr":"1",
+            "segStart":12137,
+            "segEnd":14537
+        }
+    ]
+}
+```
+
+**Input**:
+    :segChr can be something like "chr1" or just "1"
+    :start and :stop are integer coordinates, where start<stop
+
+Example:
+```
+import httplib
+conn = httplib.HTTPConnection("localhost",8080)
+conn.request("GET", "/segments/get/fromSegment/chr1/20000/40000")
+r1 = conn.getresponse()
+print(r1.read())
+```
+would produce something like:
+```
+'{"result":[{"segID":"testsegmentation::66114507-120a-439c-988b-fe28cdad95f4","segChr":"1","segStart":22137,"segEnd":22937},{"segID":"testsegmentation::f606b4f4-3ffa-4780-89b4-e941b930cf15","segChr":"1","segStart":26937,"segEnd":27537},{"segID":"testsegmentation::fb3a9df2-ab10-449f-b696-d1a10191e647","segChr":"1","segStart":28537,"segEnd":29737},{"segID":"testsegmentation::dd796ae7-4250-44c4-99a3-639ebd156272","segChr":"1","segStart":30137,"segEnd":30337},{"segID":"testsegmentation::7b305233-8a37-4f07-baed-e44e6c610560","segChr":"1","segStart":27537,"segEnd":28537},{"segID":"testsegmentation::fdea5adf-a454-4a5a-a738-8ceb30df7cf7","segChr":"1","segStart":14537,"segEnd":20337},{"segID":"testsegmentation::dd23cff7-02c1-4ed1-b22c-2324fe8c4909","segChr":"1","segStart":29737,"segEnd":30137},{"segID":"testsegmentation::e45e0b9f-0463-45d3-b2b2-d856333e52ba","segChr":"1","segStart":20337,"segEnd":22137},{"segID":"testsegmentation::cd227dea-7247-4add-98e5-b4f94e626bc2","segChr":"1","segStart":22937,"segEnd":26937},{"segID":"testsegmentation::9b34b568-6a6b-4273-b706-9dc71814124c","segChr":"1","segStart":30337,"segEnd":36937}],"error":"None"}'
+```
+
+or, this would work equally well:
+```
+conn.request("GET", "/segments/get/fromSegment/1/20000/40000")
+```
+
+## Getting a single region based on a region ID ##
+
+This call takes as a parameter the region ID and returns a region's chromosome and positional coordinates.
+```
+GET /segments/find/BySegmentID/:segmentID
+```
+
+A typical reply would be:
+```
+{
+    "result":
+        [
+            {
+                "segID":"TestSegmentation::2a43bb7b-d35d-4193-8941-e8a2d232ee95",
+                "segChr":"1",
+                "segStart":22137,
+                "segEnd":22937
+            }
+        ],
+        "error":"None"
+}
+```
+
+**Input** :segmentID is something like "TestSegmentation::2a43bb7b-d35d-4193-8941-e8a2d232ee95"
+
+Example:
+```
+import httplib
+conn = httplib.HTTPConnection("localhost",8080)
+conn.request("GET", "/segments/find/BySegmentID/testsegmentation::512b13b3-67cd-46ef-87c8-0c7579e2304d")
+r1 = conn.getresponse()
+print(r1.read())
+```
+would produce something like:
+```
+'{"result":[{"segID":"testsegmentation::512b13b3-67cd-46ef-87c8-0c7579e2304d","segChr":"1","segStart":10000,"segEnd":10600}],"error":"None"}'
+```
+
+## Getting all annotation values for an experiment ##
+
+A user may be interested in obtaining all the annotations committed with an experiment. The following call provides this information:
+```
+GET /experiments/get/ByName/:expName
+```
+
+**Input**: :expName is the name of the experiment, such as "BroadHMM"
+
+Example:
+```
+import httplib
+conn = httplib.HTTPConnection("localhost",8080)
+conn.request("GET", "/experiments/get/ByName/BroadHMMExperiment")
+r1 = conn.getresponse()
+print(r1.read())
+```
+would produce something like:
+```
+'{"result":[{"segmentID":"BroadHMM::365d4660-85af-4841-8643-d2b7f8eb2839","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::826f9efe-0931-48a5-b2fc-a6117ad69e28","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4aea194d-8a69-4839-b698-41ec8602662d","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4d30c911-54dd-469e-9595-6a7042270d0b","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}}],"error":"None"}'
+```
+
+## Getting all annotation values associated with a segmentation ##
+
+A user may be interested in obtaining all the annotations associated with a particular segmentation. Note that annotations from different experiments may use the same segmentation.
+```
+GET /experiments/get/BySegmentationName/:segName
+```
+
+**Input**: :segName is the name of the segmentation, such as "BroadHMM" or "TestSegmentation"
+
+Example:
+```
+import httplib
+conn = httplib.HTTPConnection("localhost",8080)
+conn.request("GET", "/experiments/get/BySegmentationName/BroadHMM")
+r1 = conn.getresponse()
+print(r1.read())
+```
+would produce something like:
+```
+'{"result":[{"segmentID":"BroadHMM::365d4660-85af-4841-8643-d2b7f8eb2839","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::826f9efe-0931-48a5-b2fc-a6117ad69e28","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4aea194d-8a69-4839-b698-41ec8602662d","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4d30c911-54dd-469e-9595-6a7042270d0b","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}}],"error":"None"}'
+```
+
+## Getting all annotation values associated with a particular region ID ##
+
+A user may be interested in obtaining all the annotations associated with a particular region ID. Note that the same region ID may be associated with different annotations in different experiments.
+```
+GET /experiments/get/ByRegionID/:regionID
+```
+
+**Input**: :regionID is the id of the region in question, e.g. "BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf"
+
+Example:
+```
+import httplib
+conn = httplib.HTTPConnection("localhost",8080)
+conn.request("GET", "/experiments/get/ByRegionID/BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf")
+r1 = conn.getresponse()
+print(r1.read())
+```
+would produce something like:
+```
+'{"result":[{"segmentID":"BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}}],"error":"None"}'
+```
+
+## Match APIs ##
+
+*to be implemented once matching functionality is well understood and defined*
 
