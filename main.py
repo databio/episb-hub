@@ -20,7 +20,7 @@ flask_port=''
 @app.route('/region/<chrom>/<start>/<stop>')
 def render_segments(chrom,start,stop):
   check_start_stop(start,stop)
-  url = "http://" + es_host + ":" + es_port + es_path + "/get/fromSegment/" + chrom + "/" + start + "/" + stop
+  url = "http://" + es_host + ":" + es_port + es_path + "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
   try:
     url_req = urllib2.urlopen(url)
     query_json = json.load(url_req)
@@ -30,7 +30,7 @@ def render_segments(chrom,start,stop):
 
 @app.route('/api/v1/region/<chrom>/<start>/<stop>')
 def render_segments_json(chrom,start,stop):
-  url = "http://" + es_host + ":" + es_port + es_path + "/get/fromSegment/" + chrom + "/" + start + "/" + stop
+  url = "http://" + es_host + ":" + es_port + es_path + "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
   try:
     url_req = urllib2.urlopen(url)
     query_json = json.load(url_req)
