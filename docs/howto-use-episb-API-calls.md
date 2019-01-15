@@ -222,7 +222,7 @@ Example:
 ```
 import httplib
 conn = httplib.HTTPConnection("localhost",8080)
-conn.request("GET", "/get/fromSegment/chr1/20000/40000")
+conn.request("GET", "/segments/get/fromSegment/chr1/20000/40000")
 r1 = conn.getresponse()
 print(r1.read())
 ```
@@ -233,7 +233,7 @@ would produce something like:
 
 or, this would work equally well:
 ```
-conn.request("GET", "/get/fromSegment/1/20000/40000")
+conn.request("GET", "/segments/get/fromSegment/1/20000/40000")
 ```
 
 ## Getting a single region based on a region ID ##
