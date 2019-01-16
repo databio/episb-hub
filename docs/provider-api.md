@@ -6,7 +6,7 @@ Below we discuss different scenarios that may come up when writing tools relying
 
 ## What is covered in this document ##
 
-During this discussion a full URL is used where the episb-provider is running by default (http://episb.org:8080/episb-provider). Depending on how an individual installation is set up, this portion of the URL may differ from server to server.
+During this discussion a full URL is used where the episb-provider is running by default (http://provider.episb.org/episb-provider). Depending on how an [individual installation is set up[(http://code.databio.org/episb/howto-build-provider/), this portion of the URL may differ from server to server.
 
 In addition, all of the API calls return either a JsonError or a JsonSuccess object, with a general structure as follows:
 
@@ -68,8 +68,8 @@ A list of segmentation names can be extracted by traversing the JSON list in the
 Example:
 ```
 import httplib
-conn = httplib.HTTPConnection("localhost",8080)
-conn.request("GET", "/segmentations/get/all")
+conn = httplib.HTTPConnection("provider.episb.org")
+conn.request("GET", "episb-provider/segmentations/get/all")
 r1 = conn.getresponse()
 print(r1.read())
 ```
@@ -114,8 +114,8 @@ Notice that a segment ID is a concatentation of the name of segmentation_name ::
 Example:
 ```
 import httplib
-conn = httplib.HTTPConnection("localhost",8080)
-conn.request("GET", "/segmentations/get/ByName/BroadHMM")
+conn = httplib.HTTPConnection("provider.episb.org")
+conn.request("GET", "/episb-provider/segmentations/get/ByName/BroadHMM")
 r1 = conn.getresponse()
 print(r1.read())
 ```
@@ -168,8 +168,8 @@ The above call may be of help when adding an experiment to the provider. The alg
 Example:
 ```
 import httplib
-conn = httplib.HTTPConnection("localhost",8080)
-conn.request("GET", "/segments/get/BySegmentationName/BroadHMM")
+conn = httplib.HTTPConnection("provider.episb.org")
+conn.request("GET", "/episb-provider/segments/get/BySegmentationName/BroadHMM")
 r1 = conn.getresponse()
 print(r1.read())
 ```
@@ -219,8 +219,8 @@ A typical successful reply may be:
 Example:
 ```
 import httplib
-conn = httplib.HTTPConnection("localhost",8080)
-conn.request("GET", "/segments/get/fromSegment/chr1/20000/40000")
+conn = httplib.HTTPConnection("provider.episb.org")
+conn.request("GET", "/episb-provider/segments/get/fromSegment/chr1/20000/40000")
 r1 = conn.getresponse()
 print(r1.read())
 ```
@@ -231,7 +231,7 @@ would produce something like:
 
 or, this would work equally well:
 ```
-conn.request("GET", "/segments/get/fromSegment/1/20000/40000")
+conn.request("GET", "/episb-provider/segments/get/fromSegment/1/20000/40000")
 ```
 
 ## Getting a single region based on a region ID ##
@@ -262,8 +262,8 @@ A typical reply would be:
 Example:
 ```
 import httplib
-conn = httplib.HTTPConnection("localhost",8080)
-conn.request("GET", "/segments/find/BySegmentID/testsegmentation::512b13b3-67cd-46ef-87c8-0c7579e2304d")
+conn = httplib.HTTPConnection("provider.episb.org")
+conn.request("GET", "/episb-provider/segments/find/BySegmentID/testsegmentation::512b13b3-67cd-46ef-87c8-0c7579e2304d")
 r1 = conn.getresponse()
 print(r1.read())
 ```
@@ -284,8 +284,8 @@ GET /experiments/get/ByName/:expName
 Example:
 ```
 import httplib
-conn = httplib.HTTPConnection("localhost",8080)
-conn.request("GET", "/experiments/get/ByName/BroadHMMExperiment")
+conn = httplib.HTTPConnection("provider.episb.org")
+conn.request("GET", "/episb-provider/experiments/get/ByName/BroadHMMExperiment")
 r1 = conn.getresponse()
 print(r1.read())
 ```
@@ -306,8 +306,8 @@ GET /experiments/get/BySegmentationName/:segName
 Example:
 ```
 import httplib
-conn = httplib.HTTPConnection("localhost",8080)
-conn.request("GET", "/experiments/get/BySegmentationName/BroadHMM")
+conn = httplib.HTTPConnection("provider.episb.org")
+conn.request("GET", "/episb-provider/experiments/get/BySegmentationName/BroadHMM")
 r1 = conn.getresponse()
 print(r1.read())
 ```
@@ -328,8 +328,8 @@ GET /experiments/get/ByRegionID/:regionID
 Example:
 ```
 import httplib
-conn = httplib.HTTPConnection("localhost",8080)
-conn.request("GET", "/experiments/get/ByRegionID/BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf")
+conn = httplib.HTTPConnection("provider.episb.org")
+conn.request("GET", "/episb-provider/experiments/get/ByRegionID/BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf")
 r1 = conn.getresponse()
 print(r1.read())
 ```
@@ -341,4 +341,3 @@ would produce something like:
 ## Match APIs ##
 
 *to be implemented once matching functionality is well understood and defined*
-
