@@ -6,9 +6,13 @@ Below we discuss different scenarios that may come up when writing tools relying
 
 ## What is covered in this document ##
 
-During this discussion a full URL is used where the episb-provider is running by default (**http://provider.episb.org/episb-provider**). Depending on how an [individual installation is set up](http://code.databio.org/episb/howto-build-provider/), this portion of the URL may differ from server to server.
+During this discussion a full URL is used where the episb-provider is running by default at (*http://provider.episb.org/episb-provider*). 
 
-In addition, all of the API calls return either a JsonError or a JsonSuccess object, with a general structure as follows:
+Depending on how an [individual installation is set up](http://code.databio.org/episb/howto-build-provider/), this URL will differ from server to server.
+
+## Types of results returned ##
+
+All of the API calls to an EPISB provider return either a JsonError or a JsonSuccess object, with general structures as follows:
 
 JsonError:
 ```
@@ -24,6 +28,8 @@ JsonSuccess:
     "error": "None"
 }
 ```
+
+Following are all the REST APIs supported by the provider.
 
 ## Getting a list of all design interfaces stored in the provider ##
 
