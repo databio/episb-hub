@@ -27,6 +27,17 @@ The included script [restart_tomcat.sh](https://github.com/databio/episb-provide
 
 For more Tomcat configuration, the files usually reside in a location such as /etc/tomcat (but can vary with Linux or BSD flavors). This is the official [guide to configuring Tomcat](https://tomcat.apache.org/tomcat-8.5-doc/index.html).
 
+**New!**: You can now also run the provider as a Docker container!
+
+```sh
+$ git clone https://github.com/databio/episb-provider.git
+$ cd episb-provider/episb-provider
+$ bash ./docker_build.sh
+$ docker run -d --rm -p 8080:8080 episb-provider:latest
+```
+
+*The URL where all the requests are served from in this method would be http://localhost:8080/episb-provider/*
+
 ## Test install ##
 
 After the above steps are completed, launch a browser and point it to localhost:8080/list (if you ran it via the SBT route above) or localhost:8080/episb-provider/list (if you ran it using the restart_tomcat.sh script above).
