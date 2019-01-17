@@ -344,6 +344,75 @@ would produce something like:
 '{"result":[{"segmentID":"BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}}],"error":"None"}'
 ```
 
+## Getting a list of all segmentation IDs (names) ##
+
+This API point can be used to obtain a list of all the segmentations kept within the provider.
+```
+GET /segmentations/list/all
+```
+
+**Input**: None
+
+Example:
+```
+import httplib
+conn = httplib.HTTPConnection("provider.episb.org")
+conn.request("GET", "/episb-provider/segmentations/list/all")
+r1 = conn.getresponse()
+print(r1.read())
+```
+would produce something like:
+```
+{"result":["testsegmentation","broadhmm"],"error":"None"}
+```
+
+## Getting a list of all experiment IDs (names) associated with a particular segmentation ##
+
+One of the objectives of EPISB is to separate the implicit pairing of an annotation with a region (as in within a .bed file). EPISB forces this separation and provides the concept of a segmentation (a list of regions) which makes an experiment an explicit pairing between an annotation value and a region ID provided by a segmentation. Use this API call to obtain all the experiment IDs connected with a particular segmentation ID (name).
+```
+GET /experiments/list/BySegmentationName/:segName
+```
+
+**Input**: :segName is the name of the segmentation we are interested in
+
+Example:
+```
+import httplib
+conn = httplib.HTTPConnection("provider.episb.org")
+conn.request("GET", "/experiments/list/BySegmentationName/broadhmm")
+r1 = conn.getresponse()
+print(r1.read())
+```
+would produce something like:
+```
+{"result":["BroadHMMExperiment"],"error":"None"}
+```
+
+In this example we have only one experiment that was tied to a segmentation.
+
+## Getting a full description of an experiment associated with a particular segmentation ##
+
+Continuing with the above theme, sometimes we do not want just the list of all the experiment IDs connected with a segmentation. Instead, we want the whole description of the experiment, its annotation value range and key and other pertinent information. The following API point provides this information.
+
+```
+GET /experiments/list/full/BySegmentationName/:segName
+```
+
+**Input**: segName is the name of the segmentation in question
+
+Example:
+```
+import httplib
+conn = httplib.HTTPConnection("provider.episb.org")
+conn.request("GET", "/experiments/list/full/BySegmentationName/broadhmm")
+r1 = conn.getresponse()
+print(r1.read())
+```
+would produce something like:
+```
+{"result":[{"providerName":"episb-provider","providerDescription":"sample segmentation provider","segmentationName":"broadhmm","experimentName":"BroadHMMExperiment","cellType":"sample cell type","description":"sample experiment description","annotationKey":"value","annotationRangeStart":"0","annotationRangeEnd":"1"}],"error":"None"}
+```
+
 ## Match APIs ##
 
 *to be implemented once matching functionality is well understood and defined*
