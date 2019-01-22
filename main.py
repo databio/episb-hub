@@ -4,10 +4,10 @@ app = Flask(__name__)
 
 # uncomment the following five lines if running on localhost
 # with episb-provider running in default setup
-#es_host=127.0.0.1'
+#es_host='localhost'
 #es_path=''
 #es_port='8080'
-#flask_host='127.0.0.1'
+#flask_host='localhost'
 #flask_port='5000'
 
 # production mode settings on "live" episb.org server
@@ -17,6 +17,70 @@ es_port='8080'
 flask_host='episb.org'
 flask_port=''
 
+providers = []
+
+class Provider:
+  def __init__(self, url, name, desc, inst, admin, contact, provider, segs, regions, anns, exps):
+    self.url = url
+    self.name = name
+    self.desc = desc
+    self.inst = inst
+    self.admin = admin
+    self.contact = contact
+    self.provider = provider
+    self.segs = segs
+    self.regions = regions
+    self.anns = anns
+    self.exps = exps
+
+# we are expecting a provider-interface kind of an URL
+# returns False if provided was not added, otherwise True
+def add_provider(url):
+  # strip out '/' at the end of the url
+  if url.endswith('/'):
+    url = url[:-1]
+  # and then strip out the provider-interface part
+  if url.endswith('provider-interface'):
+    url = url[:-19]
+  # make sure provider url doesn't already exist
+  for p in providers:
+    if p.url == url:
+      return (False, "Provider already exists")
+  try:
+    urlrq = urllib2.urlopen(url+'/provider-interface')
+    js = json.load(urlrq)
+    # are we clear to process the result list?
+    if js.has_key('error') and js['error']=="None":
+      # yes
+      if js.has_key('result'):
+        res = js['result'][0]
+        # add the provider here
+        provider = Provider(url,
+                            res['providerName'],
+                            res['providerDescription'],
+                            res['providerInstitution'],
+                            res['providerAdmin'],
+                            res['providerAdminContact'],
+                            res['segmentationsProvided'],
+                            res['segmentationsNo'],
+                            res['regionsNo'],
+                            res['annotationsNo'],
+                            res['experimentsNo'])
+        providers.append(provider)
+        return (True,"")
+      else:
+        # error of some sort, this is not a provider!
+        return (False,"Returned JSON has no key \"result\"")
+    else:
+      if js.has_key('error'):
+        return(False, "Error in returned JSON. " + js['error'])
+      else:
+        return (False, "Returned JSON has no key \"error\"")
+  except urllib2.URLError as e:
+    return (False, e.reason)
+  except KeyError as k:
+    return (False, k)
+  
 @app.route('/region/<chrom>/<start>/<stop>')
 def render_segments(chrom,start,stop):
   check_start_stop(start,stop)
@@ -72,6 +136,16 @@ def get_segments():
     url = "http://" + flask_host + ":" + flask_port + "/region/" + chrom + "/" + start + "/" + stop
   return redirect(url, code=302)
 
+@app.route("/provider", methods=["GET","POST"])
+def get_provider_info():
+  url = request.form.get("url")
+  (res,errmsg) = add_provider(url)
+  if res == True:
+    # here we recreate the table to display providers
+    return render_template("subscriptions.html", providers=providers)
+  else:
+    return render_template("error.html", errmsg=errmsg)
+  
 @app.route('/')
 def index():
   url = "http://" + es_host + ":" + es_port + es_path + "/segmentations/get/all"

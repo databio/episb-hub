@@ -18,36 +18,29 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <th scope="row">1</th>
-        <td>EPISB internal provider</td>
-        <td>http://localhost:5000/data-server</td>
-        <td>OD</td>
-      </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td>Regulatory Elements Database</td>
-        <td>http://db.databio.org/episb</td>
-        <td>NS</td>
-      </tr>
-
+      {% for provider in providers %}
+        <tr>
+          <th scope="row">{{ loop.index }}</th>
+          <td>{{ provider.name }}</td>
+          <td>{{ provider.url }}</td>
+          <td>{{ provider.admin }}</td>
+        </tr>
+      {% endfor %}
     </tbody>
   </table>
 
   <div class="col-sm-12">
     <h2>Add data provider subscription</h2>
     <p class="lead">The URL must link to a data provider that implements the EPISB data interface API.</p>
-    <form method="POST" action="/get">
+    <form method="POST" action="/provider">
       <div class="form-group">
-        <label for="url">URL:</label><input type="text" name="url" id="urlval" class="form-control" disabled />
+        <label for="url">URL:</label><input type="text" name="url" id="urlval" class="form-control" />
       </div>
       <div class="form-group">
-        <button class="btn btn-primary btn-sm form-control" disabled>Subscribe</button>
+        <button class="btn btn-primary btn-sm form-control">Subscribe</button>
       </div>
     </form>
   </div>
-
-
 </div>
 
 {% include 'foot.html' %}
