@@ -7,15 +7,15 @@ app = Flask(__name__)
 #es_host='localhost'
 #es_path=''
 #es_port='8080'
-#flask_host='localhost'
-#flask_port='5000'
+flask_host='localhost'
+flask_port='5000'
 
 # production mode settings on "live" episb.org server
-es_host='10.250.124.183'
-es_path='/episb-provider'
-es_port='8080'
-flask_host='episb.org'
-flask_port=''
+#es_host='10.250.124.183'
+#es_path='/episb-provider'
+#es_port='8080'
+#flask_host='episb.org'
+#flask_port=''
 
 providers = []
 
@@ -80,35 +80,43 @@ def add_provider(url):
     return (False, e.reason)
   except KeyError as k:
     return (False, k)
+
+@app.route("/provider", methods=["GET","POST"])
+def get_provider_info():
+  url = request.form.get("url")
+  (res,errmsg) = add_provider(url)
+  if res == True:
+    # here we recreate the table to display providers
+    return render_template("subscriptions.html", providers=providers)
+  else:
+    return render_template("error.html", errmsg=errmsg)
   
 @app.route('/region/<chrom>/<start>/<stop>')
 def render_segments(chrom,start,stop):
   check_start_stop(start,stop)
-  url = "http://" + es_host + ":" + es_port + es_path + "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
+  # organize results by provider
+  provider_res = {}
+  url = "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
   try:
-    url_req = urllib2.urlopen(url)
-    query_json = json.load(url_req)
-    return render_template("response.html", query_json=query_json, chrom=chrom,  start=start, stop=stop)
+    for provider in providers:
+      url_req = urllib2.urlopen(provider.url + url)
+      query_json = json.load(url_req)
+      provider_res[provider.url] = query_json
+    # now after we are done with all providers, display results
+    return render_template("response.html",provider_res=provider_res,chrom=chrom,start=start,stop=stop, flask_host=flask_host+":"+flask_port)
   except urllib2.URLError as e:
     print(e.reason)
 
 @app.route('/api/v1/region/<chrom>/<start>/<stop>')
 def render_segments_json(chrom,start,stop):
-  url = "http://" + es_host + ":" + es_port + es_path + "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
+  provider_res = {}
+  url = "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
   try:
-    url_req = urllib2.urlopen(url)
-    query_json = json.load(url_req)
-    return jsonify(query_json)
-  except urllib2.URLError as e:
-    print(e.reason)
-
-@app.route('/api/v1/segmentations')
-def render_segmentations():
-  url = "http://" + es_host + ":" + es_port + es_path + "/segmentations/get/all"
-  try:
-    url_req = urllib2.urlopen(url)
-    query_json = json.load(url_req)
-    return jsonify(query_json)
+    for provider in providers:
+      url_req = urllib2.urlopen(provider.url + url)
+      query_json = json.load(url_req)
+      provider_res[provider.url] = query_json
+    return jsonify(provider_res)
   except urllib2.URLError as e:
     print(e.reason)
 
@@ -122,7 +130,7 @@ def render_about():
 
 @app.route('/subscriptions')
 def render_subscriptions():
-  return render_template("subscriptions.html")
+  return render_template("subscriptions.html", providers=providers)
 
 @app.route("/get", methods=["GET","POST"])
 def get_segments():
@@ -136,25 +144,50 @@ def get_segments():
     url = "http://" + flask_host + ":" + flask_port + "/region/" + chrom + "/" + start + "/" + stop
   return redirect(url, code=302)
 
-@app.route("/provider", methods=["GET","POST"])
-def get_provider_info():
-  url = request.form.get("url")
-  (res,errmsg) = add_provider(url)
-  if res == True:
-    # here we recreate the table to display providers
-    return render_template("subscriptions.html", providers=providers)
-  else:
-    return render_template("error.html", errmsg=errmsg)
+@app.route('/api/v1/segmentations')
+def render_segmentations():
+  provider_res = {}
+  url = "/segmentations/get/all"
+  try:
+    for provider in providers:
+      url_req = urllib2.urlopen(provider.url + url)
+      query_json = json.load(url_req)
+      provider_res[provider.url] = query_json
+    return jsonify(providerquery_json)
+  except urllib2.URLError as e:
+    print(e.reason)
+
+def get_segmentations():
+  provider_res = {}
+  url = "/segmentations/list/all"
+  try:
+    for provider in providers:
+      url_req = urllib2.urlopen(provider.url + url)
+      segmentation_json = json.load(url_req)
+      provider_res[provider.url] = segmentation_json
+    return provider_res
+  except urllib2.URLError as e:
+    return {}
+  
+def get_experiments_by_segmentation_name(providerUrl, segName):
+  url = "/experiments/list/BySegmentationName/"
+  try:
+    url_req = urllib2.urlopen(providerUrl + url + segName)
+    experimentsList = json.load(url_req)
+    return experiments_list
+  except urllib2.URLError as e:
+    return None
+
+@app.route('/segmentations', methods=["GET","POST"])
+def render_segmentation_dropdown():
+  segm_by_provider = get_segmentations()
+  providerUrl = request.form.get("selected_provider")
+  return render_template("home.html", provider_res=segm_by_provider, segm=segm_by_provider[providerUrl])
   
 @app.route('/')
 def index():
-  url = "http://" + es_host + ":" + es_port + es_path + "/segmentations/get/all"
-  try:
-    url_req = urllib2.urlopen(url)
-    segmentation_json = json.load(url_req)
-    return render_template("home.html", segmentation_json=segmentation_json)
-  except urllib2.URLError as e:
-    print(e.reason)
+  segmentations_by_provider = get_segmentations()
+  return render_template("home.html", provider_res=segmentations_by_provider, segm=[])
 
 def check_start_stop(start,stop):
   if not start:
