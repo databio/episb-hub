@@ -182,12 +182,12 @@ def get_experiments_by_segmentation_name(providerUrl, segName):
 def render_segmentation_dropdown():
   segm=[]
   exps=[]
+  segmName="- Select a segmentation -"
+  expName="- Select an experiment -"
   segm_by_provider = get_segmentations()
   
   if request.form.has_key("selected_provider"):
     providerUrl = request.form.get("selected_provider")
-    segmName="- Select a segmentation -"
-    expName="- Select an experiment -"
     if request.form.has_key("segmentation_name"):
       # here we already chose a segemntation
       # now we need to get the segmentations for the provider
@@ -202,7 +202,7 @@ def render_segmentation_dropdown():
           expName = s[2]
     return render_template("home.html",
                              show_segmentations=True,
-                             provider_res=segm_by_provider,
+                             provider_res=providers,
                              providerUrl=providerUrl,
                              segmName=segmName,
                              expName=expName,
@@ -212,8 +212,8 @@ def render_segmentation_dropdown():
 @app.route('/')
 def index():
   segmentations_by_provider = get_segmentations()
-  return render_template("home.html", show_regions=True,provider_res=segmentations_by_provider,segm=[],exps=[])
-
+  return render_template("home.html", show_regions=True,
+                         provider_res=providers)
 def check_start_stop(start,stop):
   if not start:
     start = '0'
