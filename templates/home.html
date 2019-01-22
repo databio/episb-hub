@@ -57,9 +57,11 @@
             {% else %}
             <option value="" selected> - Select a Provider - </option>
             {% endif %}
+            {% if (provider_res is defined) and provider_res %}
               {% for provider in provider_res %}
                 <option value="{{ provider.url }}">{{ provider.name }}</option>
               {% endfor %}
+            {% endif %}
           </select>
 
         <label for="segmentations">Segmentations:</label>
@@ -69,7 +71,7 @@
             {% else %}
             <option value="" selected> - Select a segmentation - </option>
             {% endif %}
-            {% if segm is defined %}
+            {% if (segm is defined) and segm %}
               {% for s in segm.result %}
                 <option value="{{providerUrl}}!{{s}}">{{ s }}</option>
               {% endfor %}
@@ -83,7 +85,7 @@
             {% else %}
               <option value="" selected> - Select an experiment - </option>
             {% endif %}
-            {% if exps is defined %}
+            {% if (exps is defined) and exps %}
               {% for s in exps.result %}
                 <option value="{{providerUrl}}!{{segmName}}!{{s}}">{{ s }}</option>
               {% endfor %}
