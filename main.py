@@ -7,15 +7,15 @@ app = Flask(__name__)
 #es_host='localhost'
 #es_path=''
 #es_port='8080'
-flask_host='localhost'
-flask_port='5000'
+#flask_host='localhost'
+#flask_port='5000'
 
 # production mode settings on "live" episb.org server
 #es_host='10.250.124.183'
 #es_path='/episb-provider'
 #es_port='8080'
-#flask_host='episb.org'
-#flask_port=''
+flask_host='episb.org'
+flask_port=''
 
 providers = []
 
