@@ -173,21 +173,46 @@ def get_experiments_by_segmentation_name(providerUrl, segName):
   url = "/experiments/list/BySegmentationName/"
   try:
     url_req = urllib2.urlopen(providerUrl + url + segName)
-    experimentsList = json.load(url_req)
+    experiments_list = json.load(url_req)
     return experiments_list
   except urllib2.URLError as e:
     return None
 
 @app.route('/segmentations', methods=["GET","POST"])
 def render_segmentation_dropdown():
+  segm=[]
+  exps=[]
   segm_by_provider = get_segmentations()
-  providerUrl = request.form.get("selected_provider")
-  return render_template("home.html", provider_res=segm_by_provider, segm=segm_by_provider[providerUrl])
   
+  if request.form.has_key("selected_provider"):
+    providerUrl = request.form.get("selected_provider")
+    segmName="- Select a segmentation -"
+    expName="- Select an experiment -"
+    if request.form.has_key("segmentation_name"):
+      # here we already chose a segemntation
+      # now we need to get the segmentations for the provider
+      s = request.form.get("segmentation_name").split('!')
+      if len(s)>1:
+        providerUrl = s[0]
+        segmName = s[1]
+        exps = get_experiments_by_segmentation_name(providerUrl,segmName)
+      if request.form.has_key("experiment_name"):
+        e = request.form.get("experiment_name").split('!')
+        if len(s)>2:
+          expName = s[2]
+    return render_template("home.html",
+                             show_segmentations=True,
+                             provider_res=segm_by_provider,
+                             providerUrl=providerUrl,
+                             segmName=segmName,
+                             expName=expName,
+                             segm=segm_by_provider[providerUrl],
+                             exps=exps)
+
 @app.route('/')
 def index():
   segmentations_by_provider = get_segmentations()
-  return render_template("home.html", provider_res=segmentations_by_provider, segm=[])
+  return render_template("home.html", show_regions=True,provider_res=segmentations_by_provider,segm=[],exps=[])
 
 def check_start_stop(start,stop):
   if not start:

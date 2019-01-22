@@ -18,7 +18,11 @@
 
   <div class="accordion-group">
 
+  {% if show_regions %}
   <div class="collapse col-sm-6 show" id="retrieveRegions" data-parent="#queryTypes">
+  {% else %}
+  <div class="collapse col-sm-6" id="retrieveRegions" data-parent="#queryTypes">
+  {% endif %}
     <h2>Retrieve regions</h2>
     <p class="lead">Use chromosome, start and end coordinates to retrieve regions.</p>
     <form method="POST" action="/get" class="from-inline">
@@ -37,24 +41,48 @@
     </form>
   </div>
 
- <div class="collapse col-sm-6" id="segfilt" data-parent="#queryTypes">
+  {% if show_segmentations %}
+  <div class="collapse col-sm-6 show" id="segfilt" data-parent="#queryTypes">
+  {% else %}
+  <div class="collapse col-sm-6" id="segfilt" data-parent="#queryTypes">
+  {% endif %}
     <h2>Segmentation filter</h2>
     <p class="lead">Starting with a Segmentation, filter to a biologically relevant subset of regions.</p>
     <form method="POST" action="/segmentations">
       <div class="form-group">
         <label for="provider">Provider:</label>
           <select name="selected_provider" id="selected_provider" class="form-control" onchange="this.form.submit()">
+            {% if providerUrl is defined %}
+            <option value="{{providerUrl}}" selected>{{ providerUrl }}</option>
+            {% else %}
             <option value="" selected> - Select a Provider - </option>
+            {% endif %}
               {% for provider in provider_res %}
                 <option value="{{ provider }}">{{ provider }}</option>
               {% endfor %}
           </select>
 
         <label for="segmentations">Segmentations:</label>
-          <select name="segmentation_name" id="segmentation_name" class="form-control">
+          <select name="segmentation_name" id="segmentation_name" class="form-control" onchange="this.form.submit()">
+            {% if segmName is defined %}
+            <option value="{{segmName}}" selected>{{segmName}} </option>
+            {% else %}
             <option value="" selected> - Select a segmentation - </option>
+            {% endif %}
             {% for s in segm.result %}
-              <option value="{{ s }}">{{ s }}</option>
+              <option value="{{providerUrl}}!{{s}}">{{ s }}</option>
+            {% endfor %}
+          </select>
+
+        <label for="experiments">Experiments:</label>
+          <select name="experiment_name" id="experiment_name" class="form-control" onchange="this.form.submit()">
+            {% if expName is defined %}
+              <option value="{{expName}}" selected>{{expName}} </option>
+            {% else %}
+              <option value="" selected> - Select an experiment - </option>
+            {% endif %}
+            {% for s in exps.result %}
+              <option value="{{providerUrl}}!{{segmName}}!{{s}}">{{ s }}</option>
             {% endfor %}
           </select>
 
@@ -65,7 +93,11 @@
   </div>
 
 
- <div class="collapse col-sm-6" id="segmentation-match" data-parent="#queryTypes">
+  {% if show_matcher %}
+  <div class="collapse col-sm-6 show" id="segmentation-match" data-parent="#queryTypes">
+  {% else %}
+  <div class="collapse col-sm-6" id="segmentation-match" data-parent="#queryTypes">
+  {% endif %}
     <h2>Segmentation matcher</h2>
     <p class="lead">Given a region set, choose the best matching Segmentation.</p>
     <form method="POST" action="/get">
@@ -77,7 +109,11 @@
   </div>
 
 
- <div class="collapse col-sm-6" id="query-annotations" data-parent="#queryTypes">
+  {% if show_annotations %}
+  <div class="collapse col-sm-6 show" id="query-annotations" data-parent="#queryTypes">
+  {% else %}
+  <div class="collapse col-sm-6" id="query-annotations" data-parent="#queryTypes">
+  {% endif %}
     <h2>Query annotations</h2>
     <p class="lead">Use a starting point and ending point for a search across records.</p>
     <form method="POST" action="/get">
