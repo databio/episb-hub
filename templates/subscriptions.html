@@ -18,6 +18,7 @@
       </tr>
     </thead>
     <tbody>
+      {% if (providers is defined) and providers %}
       {% for provider in providers %}
         <tr>
           <th scope="row">{{ loop.index }}</th>
@@ -26,6 +27,7 @@
           <td>{{ provider.admin }}</td>
         </tr>
       {% endfor %}
+      {% endif %}
     </tbody>
   </table>
 
