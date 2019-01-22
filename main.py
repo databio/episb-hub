@@ -211,9 +211,8 @@ def render_segmentation_dropdown():
 
 @app.route('/')
 def index():
-  segmentations_by_provider = get_segmentations()
-  return render_template("home.html", show_regions=True,
-                         provider_res=providers)
+  return render_template("home.html", show_regions=True, provider_res=providers)
+
 def check_start_stop(start,stop):
   if not start:
     start = '0'

@@ -97,11 +97,7 @@
   </div>
 
 
-  {% if show_matcher %}
-  <div class="collapse col-sm-6 show" id="segmentation-match" data-parent="#queryTypes">
-  {% else %}
   <div class="collapse col-sm-6" id="segmentation-match" data-parent="#queryTypes">
-  {% endif %}
     <h2>Segmentation matcher</h2>
     <p class="lead">Given a region set, choose the best matching Segmentation.</p>
     <form method="POST" action="/get">
@@ -113,11 +109,7 @@
   </div>
 
 
-  {% if show_annotations %}
-  <div class="collapse col-sm-6 show" id="query-annotations" data-parent="#queryTypes">
-  {% else %}
   <div class="collapse col-sm-6" id="query-annotations" data-parent="#queryTypes">
-  {% endif %}
     <h2>Query annotations</h2>
     <p class="lead">Use a starting point and ending point for a search across records.</p>
     <form method="POST" action="/get">
