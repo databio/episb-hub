@@ -4,36 +4,36 @@
 
 <div class="container">
 
-  <img src="static/images/epigenome_switchboard_logo_fade.svg" style="width:100%;" />
-
 <div id="queryTypes">
 
-<h1>Choose a query type:</h1>
+<h1>Select query mode</h1>
 
-  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#retrieveRegions" aria-expanded="false" aria-controls="retrieveRegions">Retrieve Regions</button>
+  <button class="btn btn-primary" type="button small" data-toggle="collapse" data-target="#retrieveSegments" aria-expanded="false" aria-controls="retrieveSegments">Retrieve segments</button>
   <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#segfilt" aria-expanded="true" aria-controls="segfilt">Segmentation filter</button>
   <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#segmentation-match" aria-expanded="true" aria-controls="segmentation-match">Segmentation match</button>
   <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#query-annotations" aria-expanded="true" aria-controls="query-annotations">Query annotations</button>
 
-
   <div class="accordion-group">
 
   {% if show_regions %}
-  <div class="collapse col-sm-6 show" id="retrieveRegions" data-parent="#queryTypes">
+  <div class="collapse col-sm-6 show" id="retrieveSegments" data-parent="#queryTypes">
   {% else %}
-  <div class="collapse col-sm-6" id="retrieveRegions" data-parent="#queryTypes">
+  <div class="collapse col-sm-6" id="retrieveSegments" data-parent="#queryTypes">
   {% endif %}
-    <h2>Retrieve regions</h2>
-    <p class="lead">Use chromosome, start and end coordinates to retrieve regions.</p>
+    <h2>Retrieve segments</h2>
+    <p>Given chr, start and stop values, the hub returns any overlapping segments from all segmentation providers linked to this hub.</p>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#retrieveSegmentsModal">
+      Help
+    </button>    
     <form method="POST" action="/get" class="from-inline">
     <div class="row">
-			<div class="form-group col-md-6">
+			<div class="form-group col-md-4">
         <label for="chrom">Chromosome:</label><input type="text" name="chrom" id="chrom" class="form-control" />
       </div>
-      <div class="form-group col-md-7">
+      <div class="form-group col-md-4">
         <label for="startval">Start Value:</label><input type="text" name="start" id="startval" class="form-control" />
       </div>
-      <div class="form-group col-md-6">
+      <div class="form-group col-md-4">
         <label for="stopval">Stop Value:</label><input type="text" name="stop" id="stopval" class="form-control" />
       </div>
       <button class="btn btn-primary btn-sm form-control">Search</button>
@@ -47,7 +47,10 @@
   <div class="collapse col-sm-6" id="segfilt" data-parent="#queryTypes">
   {% endif %}
     <h2>Segmentation filter</h2>
-    <p class="lead">Starting with a Segmentation, filter to a biologically relevant subset of regions.</p>
+    <p>Starting with a Segmentation, filter to a biologically relevant subset of regions.</p>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#segmentationFilterModal">
+      Help
+    </button>     
     <form method="POST" action="/segmentations">
       <div class="form-group">
         <label for="provider">Provider:</label>
@@ -55,7 +58,7 @@
             {% if providerUrl is defined %}
             <option value="{{providerUrl}}" selected>{{ providerUrl }}</option>
             {% else %}
-            <option value="" selected> - Select a Provider - </option>
+            <option value="" selected> - Select a provider - </option>
             {% endif %}
             {% if (provider_res is defined) and provider_res %}
               {% for provider in provider_res %}
@@ -99,9 +102,12 @@
   </div>
 
 
-  <div class="collapse col-sm-6" id="segmentation-match" data-parent="#queryTypes">
-    <h2>Segmentation matcher</h2>
-    <p class="lead">Given a region set, choose the best matching Segmentation.</p>
+  <div class="collapse col-sm-6 show" id="segmentation-match" data-parent="#queryTypes">
+    <h2>Segmentation match</h2>
+    <p>Given a region set, choose the best matching Segmentation.</p>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#segmentationMatchModal">
+      Help
+    </button>     
     <form method="POST" action="/get">
       <div class="input-group">
         <label for="regionIDs">Region IDs:</label><input type="file" name="start" id="regionIDs" class="form-control" />
@@ -111,9 +117,12 @@
   </div>
 
 
-  <div class="collapse col-sm-6" id="query-annotations" data-parent="#queryTypes">
+  <div class="collapse col-sm-6 show" id="query-annotations" data-parent="#queryTypes">
     <h2>Query annotations</h2>
-    <p class="lead">Use a starting point and ending point for a search across records.</p>
+    <p>Use a starting point and ending point for a search across records.</p>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#queryAnnotationsModal">
+      Help
+    </button>     
     <form method="POST" action="/get">
       <div class="input-group">
         <label for="regionIDs">Region IDs:</label><input type="text" name="start" id="regionIDs" class="form-control" disabled />
@@ -124,6 +133,92 @@
 
 </div>
 </div>
+</div>
+
+
+<!-- Modals for detailed help instructions -->
+<div class="modal fade" id="retrieveSegmentsModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Instructions for retrieving segments</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Given chr, start and stop values, the hub returns any overlapping segments from all segmentation providers linked to this hub.</p>
+
+        <p>You can find more detailed explanation in the <a href="http://code.databio.org/episb/howto-query-provider/">episb query modes documentation</a>.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="segmentationFilterModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Instructions for segmentation filter</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>A segmentation is a collection of genomic regions that divides the genome into non-overlapping regions of interest. The segmentation filter allows a user to take a given segmentation and filter it using custom criteria. You should use the segmentation filter to reduce a segmentation to a subset that is specific for a particular biological question.</p>
+
+        <p>You can find more detailed explanation in the <a href="http://code.databio.org/episb/howto-query-provider/">episb query modes documentation</a>.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="segmentationMatchModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Instructions for segmentation match</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>A segmentation is a collection of genomic regions that divides the genome into non-overlapping regions of interest. The segmentation match query allows a user to upload a set of genomic regions (such as a BED file) and it will return the best segmentation for those regions. You should use the segmentation match to determine the best way to normalize your region set to an existing segmentation.</p>
+
+        <p>You can find more detailed explanation in the <a href="http://code.databio.org/episb/howto-query-provider/">episb query modes documentation</a>.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="queryAnnotationsModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Instructions for segmentation match</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>A segmentation is a collection of genomic regions that divides the genome into non-overlapping regions of interest. The segmentation match query allows a user to upload a set of genomic regions (such as a BED file) and it will return the best segmentation for those regions. You should use the segmentation match to determine the best way to normalize your region set to an existing segmentation.</p>
+
+        <p>You can find more detailed explanation in the <a href="http://code.databio.org/episb/howto-query-provider/">episb query modes documentation</a>.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% include 'foot.html' %}
