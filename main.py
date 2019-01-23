@@ -1,6 +1,43 @@
 import json, urllib2, os
-from flask import Flask, render_template, request, redirect, jsonify
+
+from flask import Flask, render_template, request, redirect, jsonify, g, session
+from flask.json import JSONEncoder
+
+class Provider:
+  def __init__(self, url, name, desc, inst, admin, contact, provider, segs, regions, anns, exps):
+    self.url = url
+    self.name = name
+    self.desc = desc
+    self.inst = inst
+    self.admin = admin
+    self.contact = contact
+    self.provider = provider
+    self.segs = segs
+    self.regions = regions
+    self.anns = anns
+    self.exps = exps
+
+class EpisbJSONEncoder(JSONEncoder):
+  def default(self, obj):
+    if isinstance(obj, Provider):
+      return {
+        'url': obj.url,
+        'name': obj.name,
+        'desc': obj.desc,
+        'inst': obj.inst,
+        'admin': obj.admin,
+        'contact': obj.contact,
+        'provider': obj.provider,
+        'segs': obj.segs,
+        'regions': obj.regions,
+        'anns': obj.anns,
+        'exps': obj.exps
+      }
+    return super(EpisbJSONEncoder, self).default(obj)
+
 app = Flask(__name__)
+app.secret_key = "episb-secret-key"
+app.json_encoder = EpisbJSONEncoder
 
 # uncomment the following five lines if running on localhost
 # with episb-provider running in default setup
@@ -17,22 +54,6 @@ app = Flask(__name__)
 flask_host='episb.org'
 flask_port=''
 
-providers = []
-
-class Provider:
-  def __init__(self, url, name, desc, inst, admin, contact, provider, segs, regions, anns, exps):
-    self.url = url
-    self.name = name
-    self.desc = desc
-    self.inst = inst
-    self.admin = admin
-    self.contact = contact
-    self.provider = provider
-    self.segs = segs
-    self.regions = regions
-    self.anns = anns
-    self.exps = exps
-
 # we are expecting a provider-interface kind of an URL
 # returns False if provided was not added, otherwise True
 def add_provider(url):
@@ -43,8 +64,8 @@ def add_provider(url):
   if url.endswith('provider-interface'):
     url = url[:-19]
   # make sure provider url doesn't already exist
-  for p in providers:
-    if p.url == url:
+  for p in session['providers']:
+    if p['url'] == url:
       return (False, "Provider already exists")
   try:
     urlrq = urllib2.urlopen(url+'/provider-interface')
@@ -66,7 +87,8 @@ def add_provider(url):
                             res['regionsNo'],
                             res['annotationsNo'],
                             res['experimentsNo'])
-        providers.append(provider)
+        session['providers'].append(provider)
+        session.modified = True
         return (True,"")
       else:
         # error of some sort, this is not a provider!
@@ -87,7 +109,7 @@ def get_provider_info():
   (res,errmsg) = add_provider(url)
   if res == True:
     # here we recreate the table to display providers
-    return render_template("subscriptions.html", providers=providers)
+    return render_template("subscriptions.html", providers=session['providers'])
   else:
     return render_template("error.html", errmsg=errmsg)
   
@@ -98,12 +120,16 @@ def render_segments(chrom,start,stop):
   provider_res = {}
   url = "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
   try:
-    for provider in providers:
-      url_req = urllib2.urlopen(provider.url + url)
+    for provider in session['providers']:
+      url_req = urllib2.urlopen(provider['url'] + url)
       query_json = json.load(url_req)
-      provider_res[provider.url] = query_json
+      provider_res[provider['url']] = query_json
     # now after we are done with all providers, display results
-    return render_template("response.html",provider_res=provider_res,chrom=chrom,start=start,stop=stop, flask_host=flask_host+":"+flask_port)
+    if flask_port != '':
+      fh = flask_host+':'+flask_port 
+    else:
+      fh = flask_host
+    return render_template("response.html",provider_res=provider_res,chrom=chrom,start=start,stop=stop,flask_host=fh)
   except urllib2.URLError as e:
     print(e.reason)
 
@@ -112,10 +138,10 @@ def render_segments_json(chrom,start,stop):
   provider_res = {}
   url = "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
   try:
-    for provider in providers:
-      url_req = urllib2.urlopen(provider.url + url)
+    for provider in session['providers']:
+      url_req = urllib2.urlopen(provider['url'] + url)
       query_json = json.load(url_req)
-      provider_res[provider.url] = query_json
+      provider_res[provider['url']] = query_json
     return jsonify(provider_res)
   except urllib2.URLError as e:
     print(e.reason)
@@ -130,7 +156,7 @@ def render_about():
 
 @app.route('/subscriptions')
 def render_subscriptions():
-  return render_template("subscriptions.html", providers=providers)
+  return render_template("subscriptions.html", providers=session['providers'])
 
 @app.route("/get", methods=["GET","POST"])
 def get_segments():
@@ -149,10 +175,10 @@ def render_segmentations():
   provider_res = {}
   url = "/segmentations/get/all"
   try:
-    for provider in providers:
-      url_req = urllib2.urlopen(provider.url + url)
+    for provider in session['providers']:
+      url_req = urllib2.urlopen(provider['url'] + url)
       query_json = json.load(url_req)
-      provider_res[provider.url] = query_json
+      provider_res[provider['url']] = query_json
     return jsonify(providerquery_json)
   except urllib2.URLError as e:
     print(e.reason)
@@ -161,10 +187,10 @@ def get_segmentations():
   provider_res = {}
   url = "/segmentations/list/all"
   try:
-    for provider in providers:
-      url_req = urllib2.urlopen(provider.url + url)
+    for provider in session['providers']:
+      url_req = urllib2.urlopen(provider['url'] + url)
       segmentation_json = json.load(url_req)
-      provider_res[provider.url] = segmentation_json
+      provider_res[provider['url']] = segmentation_json
     return provider_res
   except urllib2.URLError as e:
     return {}
@@ -202,7 +228,7 @@ def render_segmentation_dropdown():
           expName = s[2]
     return render_template("home.html",
                              show_segmentations=True,
-                             provider_res=providers,
+                             provider_res=session['providers'],
                              providerUrl=providerUrl,
                              segmName=segmName,
                              expName=expName,
@@ -211,7 +237,12 @@ def render_segmentation_dropdown():
 
 @app.route('/')
 def index():
-  return render_template("home.html", show_regions=True, provider_res=providers)
+  if (not 'providers' in session) or ('providers' in session and session['providers']==None):
+    session['providers'] = []
+    session.modified = True
+    return render_template("home.html", show_regions=True)
+  else:
+    return render_template("home.html", show_regions=True, provider_res=session['providers'])  
 
 def check_start_stop(start,stop):
   if not start:
@@ -221,5 +252,5 @@ def check_start_stop(start,stop):
   if (stop <= start):
     return render_template("error.html", errmsg="STOP value must be greater than or equal to START value")
 
-if __name__ == '__main__':
+if __name__=='__main__':
   app.run(host='0.0.0.0',port=8888,debug=True)
