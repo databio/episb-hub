@@ -115,7 +115,7 @@ def get_provider_info():
   
 @app.route('/region/<chrom>/<start>/<stop>')
 def render_segments(chrom,start,stop):
-  check_start_stop(start,stop)
+  return check_start_stop(start,stop)
   # organize results by provider
   provider_res = {}
   url = "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
@@ -166,7 +166,7 @@ def get_segments():
   chrom = request.form.get("chrom")
   start = request.form.get("start")
   stop = request.form.get("stop")
-  check_start_stop(start,stop)
+  return check_start_stop(start,stop)
   if flask_port == '':
     url = "http://" + flask_host + "/region/" + chrom + "/" + start + "/" + stop
   else:
