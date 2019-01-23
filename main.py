@@ -156,7 +156,10 @@ def render_about():
 
 @app.route('/subscriptions')
 def render_subscriptions():
-  return render_template("subscriptions.html", providers=session['providers'])
+  if (not 'providers' in session) or ('providers' in session and session['providers']==None):
+    return render_template("subscriptions.html", providers=[])
+  else:
+    return render_template("subscriptions.html", providers=session['providers'])
 
 @app.route("/get", methods=["GET","POST"])
 def get_segments():
