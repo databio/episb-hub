@@ -252,7 +252,7 @@ def check_start_stop(start,stop):
     start = '0'
   if not stop:
     stop = '0'
-  if (stop <= start):
+  if (int(stop) <= int(start)):
     return render_template("error.html", errmsg="STOP value must be greater than or equal to START value")
 
 if __name__=='__main__':
