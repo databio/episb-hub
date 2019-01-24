@@ -121,6 +121,11 @@ def get_provider_info():
 # fetch data in json format from all providers in session
 # returns dictionary indexed by provider url
 def fetch_provider_data(api_url):
+  if (not 'providers' in session) or ('providers' in session and session['providers']==None):
+    # FIXME: should we actually redirect to subscriptions page
+    # if there are no providers, this means the user has not entered a provider
+    # in the subscriptions page
+    return (Feedback(True, ""), {})
   provider_res = {}
   try:
     for provider in session['providers']:
@@ -136,7 +141,7 @@ def render_annotations(regionID):
   # try all providers for ID
   url = '/experiments/get/ByRegionID/' + regionID
   (success, provider_res) = fetchProviderData(url)
-  return provider_res
+  return
   
 @app.route('/region/<chrom>/<start>/<stop>')
 def render_segments(chrom,start,stop):
@@ -152,7 +157,7 @@ def render_segments(chrom,start,stop):
       fh = flask_host+':'+flask_port 
     else:
       fh = flask_host
-    return render_template("response.html",provider_res=provider_res,chrom=chrom,start=start,stop=stop,flask_host=fh)
+    return render_template("response_regions_query.html",provider_res=provider_res,chrom=chrom,start=start,stop=stop,flask_host=fh)
   else:
     print(feedback.msg)
 
