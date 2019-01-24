@@ -118,30 +118,35 @@ def get_provider_info():
   else:
     return render_template("error.html", errmsg=errmsg)
 
+# fetch data in json for an individual provider
+def fetch_provider_data_individual(provider_url, api_url):
+  try:
+    url_req = urllib2.urlopen(provider_url + api_url)
+    json_reply = json.load(url_req)
+    return (OpFeedback(True, ""), json_reply)
+  except urllib2.URLError as e:
+    return (OpFeedback(False, e.reason), "")
+
 # fetch data in json format from all providers in session
 # returns dictionary indexed by provider url
 def fetch_provider_data(api_url):
+  provider_res = {}
   if (not 'providers' in session) or ('providers' in session and session['providers']==None):
     # FIXME: should we actually redirect to subscriptions page
     # if there are no providers, this means the user has not entered a provider
     # in the subscriptions page
-    return (Feedback(True, ""), {})
-  provider_res = {}
-  try:
-    for provider in session['providers']:
-      url_req = urllib2.urlopen(provider['url'] + api_url)
-      json_reply = json.load(url_req)
-      provider_res[provider['url']] = json_reply
-      return (OpFeedback(True, ""), provider_res)
-  except urllib2.URLError as e:
-    return (OpFeedback(False, e.reason), {})
+    return provider_res
+  for provider in session['providers']:
+    (feedback, data) = fetch_provider_data_individual(provider["url"], api_url)
+    if feedback.success:
+      provider_res[provider["url"]] = data
+  return provider_res
 
 @app.route('/annotations/<regionID>')
 def render_annotations(regionID):
   # try all providers for ID
   url = '/experiments/get/ByRegionID/' + regionID
-  (success, provider_res) = fetchProviderData(url)
-  return
+  return fetch_provider_data(url)
   
 @app.route('/region/<chrom>/<start>/<stop>')
 def render_segments(chrom,start,stop):
@@ -150,25 +155,18 @@ def render_segments(chrom,start,stop):
     return render_template("error.html", errmsg="STOP value must be greater than or equal to START value")
   # organize results by provider
   url = "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
-  (feedback, provider_res) = fetch_provider_data(url)
-  if feedback.success:
-    # now after we are done with all providers, display results
-    if flask_port != '':
-      fh = flask_host+':'+flask_port 
-    else:
-      fh = flask_host
-    return render_template("response_regions_query.html",provider_res=provider_res,chrom=chrom,start=start,stop=stop,flask_host=fh)
+  provider_res = fetch_provider_data(url)
+  # now after we are done with all providers, display results
+  if flask_port != '':
+    fh = flask_host+':'+flask_port 
   else:
-    print(feedback.msg)
+    fh = flask_host
+  return render_template("response_regions_query.html",provider_res=provider_res,chrom=chrom,start=start,stop=stop,flask_host=fh)
 
 @app.route('/api/v1/region/<chrom>/<start>/<stop>')
 def render_segments_json(chrom,start,stop):
   url = "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
-  (feedback, provider_res) = fetch_provider_data(url)
-  if feedback.success:
-    return jsonify(provider_res)
-  else:
-    print(feedback.msg)
+  return jsonify(fetch_provider_data(url))
 
 @app.route('/api')
 def render_api():
@@ -202,16 +200,11 @@ def get_segments():
 @app.route('/api/v1/segmentations')
 def render_segmentations():
   url = "/segmentations/get/all"
-  (feedback, provider_res) = fetch_provider_data(url)
-  if feedback.success:
-    return jsonify(provider_res)
-  else:
-    print(feedback.msg)
+  return jsonify(fetch_provider_data(url))
 
 def get_segmentations():
   url = "/segmentations/list/all"
-  (feedback, provider_res) = fetch_provider_data(url)
-  return provider_res
+  return fetch_provider_data(url)
   
 def get_experiments_by_segmentation_name(providerUrl, segName):
   url = "/experiments/list/BySegmentationName/"
@@ -229,6 +222,9 @@ def render_segmentation_dropdown():
   segmName="- Select a segmentation -"
   expName="- Select an experiment -"
   segm_by_provider = get_segmentations()
+  minVal=0.0
+  maxVal=100.0
+  midVal=50.0
   
   if request.form.has_key("selected_provider"):
     providerUrl = request.form.get("selected_provider")
@@ -245,6 +241,16 @@ def render_segmentation_dropdown():
         if len(e)>2:
           segmName = e[1]
           expName = e[2]
+          # get the annotations for this experiment
+          api_url = "/experiments/list/full/BySegmentationName/" + segmName
+          (status, ei) = fetch_provider_data_individual(providerUrl, api_url)
+          for e in ei["result"]:
+            if e["experimentName"] == expName:
+              minVal = float(e["annotationRangeStart"])
+              maxVal = float(e["annotationRangeEnd"])
+              midVal = (maxVal - minVal) / 2
+              break
+          
     return render_template("home.html",
                              show_segmentations=True,
                              provider_res=session['providers'],
@@ -252,7 +258,10 @@ def render_segmentation_dropdown():
                              segmName=segmName,
                              expName=expName,
                              segm=segm_by_provider[providerUrl],
-                             exps=exps)
+                             exps=exps,
+                             minVal=minVal,
+                             maxVal=maxVal,
+                             midVal=midVal)
 
 @app.route('/')
 def index():
