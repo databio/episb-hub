@@ -141,9 +141,9 @@ def fetch_provider_data(api_url):
   if (not 'providers' in session) or ('providers' in session and session['providers']==None):
     init_providers()
   for provider in session['providers']:
-    (feedback, data) = fetch_provider_data_individual(provider.url, api_url)
+    (feedback, data) = fetch_provider_data_individual(provider['url'], api_url)
     if feedback.success:
-      provider_res[provider.url] = data
+      provider_res[provider['url']] = data
   return provider_res
 
 @app.route('/annotations/<regionID>')
