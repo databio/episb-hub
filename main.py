@@ -227,8 +227,9 @@ def render_segmentation_dropdown():
         exps = get_experiments_by_segmentation_name(providerUrl,segmName)
       if request.form.has_key("experiment_name"):
         e = request.form.get("experiment_name").split('!')
-        if len(s)>2:
-          expName = s[2]
+        if len(e)>2:
+          segmName = e[1]
+          expName = e[2]
     return render_template("home.html",
                              show_segmentations=True,
                              provider_res=session['providers'],

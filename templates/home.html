@@ -27,7 +27,7 @@
     </button>    
     <form method="POST" action="/get" class="from-inline">
     <div class="row">
-			<div class="form-group col-md-4">
+	  <div class="form-group col-md-4">
         <label for="chrom">Chromosome:</label><input type="text" name="chrom" id="chrom" class="form-control" />
       </div>
       <div class="form-group col-md-4">
@@ -94,6 +94,18 @@
               {% endfor %}
             {% endif %}
           </select>
+
+        <div class="input-group row">
+          <select name="Filter" class="form-control" style="width:20%">
+            <option value="ge">&ge;</option>
+            <option value="le">&le;</option>
+            <option value="eq">&equals;</option>
+          </select>
+          <span id="slider_value" class="form-control" style="width:20%">50</span><br>
+        </div>
+
+         <label for="regionIDs"></label><input type="range" min="1" max="100" value="50" class="slider" id="myRange" style="width:75px" onchange="show_value(this.value);">
+        <button type="button" class="btn btn-secondary">Add rule</button>
         <button class="btn btn-primary btn-sm form-control">Search</button>
       </div>
     </form>
