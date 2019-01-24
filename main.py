@@ -149,12 +149,21 @@ def fetch_provider_data(api_url):
       provider_res[provider['url']] = data
   return provider_res
 
-@app.route('/annotations/<regionID>')
-def render_annotations(regionID):
+@app.route('/annotations', methods=["GET","POST"])
+def render_annotations():
   # try all providers for ID
+  regionID = request.form.get("regionID")
   url = '/experiments/get/ByRegionID/' + regionID
-  return fetch_provider_data(url)
-  
+  provider_res = fetch_provider_data(url)
+  if flask_port != '':
+    fh = flask_host+':'+flask_port 
+  else:
+    fh = flask_host
+  return render_template("response_annotations_query.html",
+                         provider_res=provider_res,
+                         regionID=regionID,
+                         flask_host=fh)
+
 @app.route('/region/<chrom>/<start>/<stop>')
 def render_segments(chrom,start,stop):
   res = check_start_stop(start,stop)
