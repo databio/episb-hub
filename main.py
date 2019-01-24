@@ -17,6 +17,9 @@ class Provider:
     self.anns = anns
     self.exps = exps
 
+  def __getitem__(self, key):
+    return getattr(self, key)
+
 class EpisbJSONEncoder(JSONEncoder):
   def default(self, obj):
     if isinstance(obj, Provider):
