@@ -35,6 +35,11 @@ class EpisbJSONEncoder(JSONEncoder):
       }
     return super(EpisbJSONEncoder, self).default(obj)
 
+class OpFeedback:
+  def __init__(self, success, msg):
+    self.success = success
+    self.msg = msg
+
 app = Flask(__name__)
 app.secret_key = "episb-secret-key"
 app.json_encoder = EpisbJSONEncoder
@@ -112,39 +117,53 @@ def get_provider_info():
     return render_template("subscriptions.html", providers=session['providers'])
   else:
     return render_template("error.html", errmsg=errmsg)
+
+# fetch data in json format from all providers in session
+# returns dictionary indexed by provider url
+def fetch_provider_data(api_url):
+  provider_res = {}
+  try:
+    for provider in session['providers']:
+      url_req = urllib2.urlopen(provider['url'] + api_url)
+      json_reply = json.load(url_req)
+      provider_res[provider['url']] = json_reply
+      return (OpFeedback(True, ""), provider_res)
+  except urllib2.URLError as e:
+    return (OpFeedback(False, e.reason), {})
+
+@app.route('/annotations/<regionID>')
+def render_annotations(regionID):
+  # try all providers for ID
+  url = '/experiments/get/ByRegionID/' + regionID
+  (success, provider_res) = fetchProviderData(url)
+  return provider_res
   
 @app.route('/region/<chrom>/<start>/<stop>')
 def render_segments(chrom,start,stop):
-  return check_start_stop(start,stop)
+  res = check_start_stop(start,stop)
+  if res:
+    return render_template("error.html", errmsg="STOP value must be greater than or equal to START value")
   # organize results by provider
-  provider_res = {}
   url = "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
-  try:
-    for provider in session['providers']:
-      url_req = urllib2.urlopen(provider['url'] + url)
-      query_json = json.load(url_req)
-      provider_res[provider['url']] = query_json
+  (feedback, provider_res) = fetch_provider_data(url)
+  if feedback.success:
     # now after we are done with all providers, display results
     if flask_port != '':
       fh = flask_host+':'+flask_port 
     else:
       fh = flask_host
     return render_template("response.html",provider_res=provider_res,chrom=chrom,start=start,stop=stop,flask_host=fh)
-  except urllib2.URLError as e:
-    print(e.reason)
+  else:
+    print(feedback.msg)
 
 @app.route('/api/v1/region/<chrom>/<start>/<stop>')
 def render_segments_json(chrom,start,stop):
-  provider_res = {}
   url = "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
-  try:
-    for provider in session['providers']:
-      url_req = urllib2.urlopen(provider['url'] + url)
-      query_json = json.load(url_req)
-      provider_res[provider['url']] = query_json
+  (feedback, provider_res) = fetch_provider_data(url)
+  if feedback.success:
     return jsonify(provider_res)
-  except urllib2.URLError as e:
-    print(e.reason)
+  else:
+    print(feedback.msg)
 
 @app.route('/api')
 def render_api():
@@ -166,7 +185,9 @@ def get_segments():
   chrom = request.form.get("chrom")
   start = request.form.get("start")
   stop = request.form.get("stop")
-  return check_start_stop(start,stop)
+  res = check_start_stop(start,stop)
+  if res:
+    return render_template("error.html", errmsg="STOP value must be greater than or equal to START value")
   if flask_port == '':
     url = "http://" + flask_host + "/region/" + chrom + "/" + start + "/" + stop
   else:
@@ -175,28 +196,17 @@ def get_segments():
 
 @app.route('/api/v1/segmentations')
 def render_segmentations():
-  provider_res = {}
   url = "/segmentations/get/all"
-  try:
-    for provider in session['providers']:
-      url_req = urllib2.urlopen(provider['url'] + url)
-      query_json = json.load(url_req)
-      provider_res[provider['url']] = query_json
-    return jsonify(providerquery_json)
-  except urllib2.URLError as e:
-    print(e.reason)
+  (feedback, provider_res) = fetch_provider_data(url)
+  if feedback.success:
+    return jsonify(provider_res)
+  else:
+    print(feedback.msg)
 
 def get_segmentations():
-  provider_res = {}
   url = "/segmentations/list/all"
-  try:
-    for provider in session['providers']:
-      url_req = urllib2.urlopen(provider['url'] + url)
-      segmentation_json = json.load(url_req)
-      provider_res[provider['url']] = segmentation_json
-    return provider_res
-  except urllib2.URLError as e:
-    return {}
+  (feedback, provider_res) = fetch_provider_data(url)
+  return provider_res
   
 def get_experiments_by_segmentation_name(providerUrl, segName):
   url = "/experiments/list/BySegmentationName/"
@@ -253,8 +263,7 @@ def check_start_stop(start,stop):
     start = '0'
   if not stop:
     stop = '0'
-  if (int(stop) <= int(start)):
-    return render_template("error.html", errmsg="STOP value must be greater than or equal to START value")
+  return (int(stop) <= int(start))
 
 if __name__=='__main__':
   app.run(host='0.0.0.0',port=8888,debug=True)
