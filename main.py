@@ -59,6 +59,9 @@ app.json_encoder = EpisbJSONEncoder
 flask_host='episb.org'
 flask_port=''
 
+def init_providers():
+  add_provider("http://provider.episb.org/episb-provider/")
+
 # we are expecting a provider-interface kind of an URL
 # returns False if provided was not added, otherwise True
 def add_provider(url):
@@ -69,9 +72,10 @@ def add_provider(url):
   if url.endswith('provider-interface'):
     url = url[:-19]
   # make sure provider url doesn't already exist
-  for p in session['providers']:
-    if p['url'] == url:
-      return (False, "Provider already exists")
+  if 'providers' in session:
+    for p in session['providers']:
+      if p['url'] == url:
+        return (False, "Provider already exists")
   try:
     urlrq = urllib2.urlopen(url+'/provider-interface')
     js = json.load(urlrq)
@@ -92,7 +96,10 @@ def add_provider(url):
                             res['regionsNo'],
                             res['annotationsNo'],
                             res['experimentsNo'])
-        session['providers'].append(provider)
+        if 'providers' not in session:
+          session['providers'] = [provider]
+        else:
+          session['providers'].append(provider)
         session.modified = True
         return (True,"")
       else:
@@ -132,14 +139,11 @@ def fetch_provider_data_individual(provider_url, api_url):
 def fetch_provider_data(api_url):
   provider_res = {}
   if (not 'providers' in session) or ('providers' in session and session['providers']==None):
-    # FIXME: should we actually redirect to subscriptions page
-    # if there are no providers, this means the user has not entered a provider
-    # in the subscriptions page
-    return provider_res
+    init_providers()
   for provider in session['providers']:
-    (feedback, data) = fetch_provider_data_individual(provider["url"], api_url)
+    (feedback, data) = fetch_provider_data_individual(provider.url, api_url)
     if feedback.success:
-      provider_res[provider["url"]] = data
+      provider_res[provider.url] = data
   return provider_res
 
 @app.route('/annotations/<regionID>')
@@ -266,11 +270,8 @@ def render_segmentation_dropdown():
 @app.route('/')
 def index():
   if (not 'providers' in session) or ('providers' in session and session['providers']==None):
-    session['providers'] = []
-    session.modified = True
-    return render_template("home.html", show_regions=True)
-  else:
-    return render_template("home.html", show_regions=True, provider_res=session['providers'])  
+    init_providers()
+  return render_template("home.html", show_regions=True, provider_res=session['providers'])  
 
 def check_start_stop(start,stop):
   if not start:
