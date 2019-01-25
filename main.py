@@ -59,8 +59,8 @@ app.json_encoder = EpisbJSONEncoder
 #es_host='10.250.124.183'
 #es_path='/episb-provider'
 #es_port='8080'
-flask_host='localhost'
-flask_port='5000'
+flask_host='episb.org'
+flask_port=''
 
 def init_providers():
   add_provider("http://provider.episb.org/episb-provider/")
