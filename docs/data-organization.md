@@ -76,7 +76,7 @@ Annotations live in the "annotations" index in Elastic.
 
 ## Provider interface ##
 
-The purpose of this JSON structure is to describe a provider. Each data provider serves this structure at the /provider-interface URL path. The contents of the structure are filled in from episb-provider/episb-provider/src/main/resources/application.conf - a HOCON file that can (and should) be manually edited ([example](https://github.com/databio/episb-provider/blob/master/episb-provider/src/main/resources/application.conf).
+The purpose of this JSON structure is to describe a provider. Each data provider serves this structure at the /provider-interface URL path. The contents of the structure are filled in from episb-provider/episb-provider/src/main/resources/application.conf - a HOCON file that can (and should) be manually edited ([example](https://github.com/databio/episb-provider/blob/master/episb-provider/src/main/resources/application.conf)).
 
 ## Experiment/segmentation pairing structure ##
 
