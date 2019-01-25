@@ -38,6 +38,6 @@ Given a set of "regions", we need to convert these into "Segmentation Regions" (
 
 ## Query: Annotations
 
-Given a query region, retrieve experimental annotations. For example, entering something like *DHS::9ff55240-9dd1-42ed-a963-98b127d09793* should bring up all the annotations from all the experiments currently stored within the provider that are linked with the DHS segmentation and the particular region within it ([http://episb.org/api/v1/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793](http://episb.org/api/v1/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793))
+Given a query region, retrieve experimental annotations. For example, entering something like *DHS::9ff55240-9dd1-42ed-a963-98b127d09793* should bring up all the annotations from all the experiments currently stored within the provider that are linked with the DHS segmentation and the particular region within it (*click the following link to see the actual query*: [http://episb.org/api/v1/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793](http://episb.org/api/v1/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793)).
 
 **Biological application**. given a set of genetic variants from a GWAS study, return the functional annotations across data providers for each disease-associated SNP.
