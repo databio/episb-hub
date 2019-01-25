@@ -2,6 +2,43 @@
 
 {% include 'menu.html' %}
 
+<div data-minval="{{ minVal }}" data-maxval="{{ maxVal }}" data-midval="{{ midVal }}" data-step="{{ step }}"</div>
+
+{% block head %}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+
+<script type=text/javascript>
+  var minVal = $( "div" ).data("minval");
+  var maxVal = $( "div" ).data("maxval");
+  var midVal = $( "div" ).data("midval");
+  var step = $( "div" ).data("step");
+  this.$row_append = $([
+      "<div class='input-group'>",
+      "<select style='width:20%'>",
+      "<option value='ge'>&ge;</option>",
+      "<option value='le'>&le;</option>",
+      "<option value='eq'>&equals;</option>",
+      "</select>",
+      "<span id='slider_value' class='form-control' style='width:20%'>'" + midVal + "' </span><br>",
+      "<label for='regionIDs'></label><input type='range' min=${minVal} max=${maxVal} value=${midVal} class='slider' id='myRange' style='width:75px' step=${step} oninput='show_value(this.value);'>",
+      "<a href='#' id='addrule'><button type='button' class='btn btn-secondary'>Add rule</button></a>",
+      "</div>"
+  ].join("\n"))
+  function append_filter() {
+      $( ".row" ).append( $row_append );
+      return false;
+    }
+  $(function() {
+    // The function is triggered on page load and with the "a#show_summary" button
+    $('a#addrule').bind('click', append_filter);
+  });
+</script>
+{% endblock %}
+
 <div class="container">
 
 <div id="queryTypes">
@@ -96,24 +133,17 @@
           </select>
 
         <div class="input-group row">
-          <select name="Filter" class="form-control" style="width:20%">
-            <option value="ge">&ge;</option>
-            <option value="le">&le;</option>
-            <option value="eq">&equals;</option>
-          </select>
-          {% if (minVal is defined) and (maxVal is defined) and (midVal is defined) %}
-          <span id="slider_value" class="form-control" style="width:20%">{{midVal}}</span><br>
-          {% else %}
-          <span id="slider_value" class="form-control" style="width:20%">50</span><br>
-          {% endif %}
+            <select name="Filter" class="form-control" style="width:20%">
+              <option value="ge">&ge;</option>
+              <option value="le">&le;</option>
+              <option value="eq">&equals;</option>
+            </select>
+            <span id="slider_value" class="form-control" style="width:20%">{{midVal}}</span><br>
+            <label for="regionIDs"></label><input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider" id="myRange" style="width:75px" step={{step}} oninput="show_value(this.value);">
+
+          <a href='#' id="addrule"><button type="button" class="btn btn-secondary">Add rule</button></a>
         </div>
 
-        {% if (minVal is defined) and (maxVal is defined) and (midVal is defined) %}
-        <label for="regionIDs"></label><input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider" id="myRange" style="width:75px" step={{step}} oninput="show_value(this.value);">
-        {% else %}
-        <label for="regionIDs"></label><input type="range" min="1" max="100" value="50" class="slider" id="myRange" style="width:75px" onchange="show_value(this.value);">
-        {% endif %}
-        <button type="button" class="btn btn-secondary">Add rule</button>
         <button class="btn btn-primary btn-sm form-control">Search</button>
       </div>
     </form>
