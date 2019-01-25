@@ -53,7 +53,8 @@
     </button>     
     <form method="POST" action="/segmentations">
       <div class="form-group">
-        <label for="provider">Provider:</label>
+        <!-- <label for="provider">Provider:</label> -->
+        <p>Provider:</p>
           <select name="selected_provider" id="selected_provider" class="form-control" onchange="this.form.submit()">
             {% if providerUrl is defined %}
             <option value="{{providerUrl}}" selected>{{ providerUrl }}</option>
@@ -67,7 +68,8 @@
             {% endif %}
           </select>
 
-        <label for="segmentations">Segmentations:</label>
+        <!-- <label for="segmentations">Segmentations:</label> -->
+        <p>Segmentations:</p>
           <select name="segmentation_name" id="segmentation_name" class="form-control" onchange="this.form.submit()">
             {% if segmName is defined %}
             <option value="{{segmName}}" selected>{{segmName}} </option>
@@ -81,7 +83,8 @@
             {% endif %}
           </select>
 
-        <label for="experiments">Experiments:</label>
+        <!-- <label for="experiments">Experiments:</label> -->
+        <p>Experiments:</p>
           <select name="experiment_name" id="experiment_name" class="form-control" onchange="this.form.submit()">
             {% if expName is defined %}
               <option value="{{expName}}" selected>{{expName}} </option>
@@ -95,18 +98,15 @@
             {% endif %}
           </select>
 
-        <div class="input-group row">
-          <select name="Filter" class="form-control" style="width:20%">
+        <p>Experiment Rules:</p>
+          <select name="Filter" class="form-control" style="width:60%">
             <option value="ge">&ge;</option>
             <option value="le">&le;</option>
             <option value="eq">&equals;</option>
           </select>
-          {% if (minVal is defined) and (maxVal is defined) and (midVal is defined) %}
-          <span id="slider_value" class="form-control" style="width:20%">{{midVal}}</span><br>
-          {% else %}
-          <span id="slider_value" class="form-control" style="width:20%">50</span><br>
-          {% endif %}
-        </div>
+          
+          <div class="rule-slider" style="width:200px;"></div>
+          <input type="number" class="rule-slider-number" />
 
         {% if (minVal is defined) and (maxVal is defined) and (midVal is defined) %}
         <label for="regionIDs"></label><input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider" id="myRange" style="width:75px" onchange="show_value(this.value);">
@@ -115,6 +115,21 @@
         {% endif %}
         <button type="button" class="btn btn-secondary">Add rule</button>
         <button class="btn btn-primary btn-sm form-control">Search</button>
+        <script>
+          $( ".rule-slider" ).slider({
+            range: "max",
+            min: {{ minVal }},
+            max: {{ maxVal }},
+            value: 0,
+            slide: function( event, ui ) {
+              $( ".rule-slider-number" ).val( ui.value );
+              $(ui.value).val($('.rule-slider-number').val());
+            }
+          });
+          $(".rule-slider-number").change(function() {
+            $(".rule-slider").slider("value", $(this).val());
+          });
+        </script>
       </div>
     </form>
   </div>
