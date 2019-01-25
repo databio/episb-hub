@@ -59,8 +59,8 @@ app.json_encoder = EpisbJSONEncoder
 #es_host='10.250.124.183'
 #es_path='/episb-provider'
 #es_port='8080'
-flask_host='episb.org'
-flask_port=''
+flask_host='localhost'
+flask_port='5000'
 
 def init_providers():
   add_provider("http://provider.episb.org/episb-provider/")
@@ -163,6 +163,11 @@ def render_annotations():
                          provider_res=provider_res,
                          regionID=regionID,
                          flask_host=fh)
+
+@app.route('/api/v1/annotations/<regionID>')
+def render_annotations_json(regionID):
+  url = '/experiments/get/ByRegionID/' + regionID
+  return jsonify(fetch_provider_data(url))
 
 @app.route('/region/<chrom>/<start>/<stop>')
 def render_segments(chrom,start,stop):
