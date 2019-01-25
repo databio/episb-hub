@@ -10,7 +10,7 @@ Given `chr`, `start` and `stop` values, the hub returns any overlapping genomic 
 
 Via API:[http://episb.org/region/1/54321/500000](http://episb.org/region/1/54321/500000).
 
-JSON results can also be retrieved, add `/json/` to the endpoint: [http://episb.org/segment/json/1/54321/500000](http://episb.org/segment/json/1/54321/500000).
+JSON results can also be retrieved like so: [http://episb.org/api/v1/region/1/54321/500000](http://episb.org/api/v1/region/1/54321/500000).
 
 **Biological application**. Given a query genomic region or set of regions, or a particular experiment or set of experiments, the system will be able to return a filtered set of genomic segments that link to the given inputs. For example, a user may wish to query the set of TAD boundaries (found in a particular segmentation provider) associated with an input set of transcription factor binding sites.
 
@@ -38,6 +38,10 @@ Given a set of "regions", we need to convert these into "Segmentation Regions" (
 
 ## Query: Annotations
 
-Given a query region, retrieve experimental annotations. For example, entering something like *DHS::9ff55240-9dd1-42ed-a963-98b127d09793* should bring up all the annotations from all the experiments currently stored within the provider that are linked with the DHS segmentation and the particular region within it (*click the following link to see the actual query*: [http://episb.org/api/v1/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793](http://episb.org/api/v1/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793)).
+Given a query region, retrieve experimental annotations. For example, entering something like *DHS::9ff55240-9dd1-42ed-a963-98b127d09793* should bring up all the annotations from all the experiments currently stored within the provider that are linked with the DHS segmentation and the particular region within it.
+
+Via API: [http://episb.org/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793](http://episb.org/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793)
+
+JSON results can also be retrieved by going to [http://episb.org/api/v1/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793](http://episb.org/api/v1/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793)).
 
 **Biological application**. given a set of genetic variants from a GWAS study, return the functional annotations across data providers for each disease-associated SNP.

@@ -149,10 +149,8 @@ def fetch_provider_data(api_url):
       provider_res[provider['url']] = data
   return provider_res
 
-@app.route('/annotations', methods=["GET","POST"])
-def render_annotations():
-  # try all providers for ID
-  regionID = request.form.get("regionID")
+@app.route('/annotations/<regionID>')
+def render_annotations_regionid(regionID):
   url = '/experiments/get/ByRegionID/' + regionID
   provider_res = fetch_provider_data(url)
   if flask_port != '':
@@ -163,6 +161,12 @@ def render_annotations():
                          provider_res=provider_res,
                          regionID=regionID,
                          flask_host=fh)
+
+@app.route('/annotations', methods=["GET","POST"])
+def render_annotations():
+  # try all providers for ID
+  regionID = request.form.get("regionID")
+  return render_annotations_regionid(regionID)
 
 @app.route('/api/v1/annotations/<regionID>')
 def render_annotations_json(regionID):
