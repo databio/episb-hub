@@ -22,7 +22,7 @@
       </thead>
       <tbody id="retTable">
       {% for provider in provider_res %}
-        {% if provider_res[provider].result != "None" %}
+        {% if (provider_res[provider].result != "None") and (provider_res[provider].result != "Ok") %}
           {% for index in provider_res[provider].result %}
           <tr>
             <td>{{ provider }}</td>
