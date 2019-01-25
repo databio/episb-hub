@@ -241,6 +241,7 @@ def render_segmentation_dropdown():
   minVal=0.0
   maxVal=100.0
   midVal=50.0
+  step=1.0
   
   if request.form.has_key("selected_provider"):
     providerUrl = request.form.get("selected_provider")
@@ -265,6 +266,7 @@ def render_segmentation_dropdown():
               minVal = float(e["annotationRangeStart"])
               maxVal = float(e["annotationRangeEnd"])
               midVal = (maxVal - minVal) / 2
+              step = (maxVal-minVal) / 100.0
               break
           
     return render_template("home.html",
@@ -277,7 +279,8 @@ def render_segmentation_dropdown():
                              exps=exps,
                              minVal=minVal,
                              maxVal=maxVal,
-                             midVal=midVal)
+                             midVal=midVal,
+                             step=step)
 
 @app.route('/')
 def index():
