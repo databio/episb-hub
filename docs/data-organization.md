@@ -74,9 +74,13 @@ For example,
 
 Annotations live in the "annotations" index in Elastic.
 
-## Design interface ##
+## Provider interface ##
 
-A "design interface" tells a user (an episb-hub, for example), what segmentations the episb-provider is able to serve. The document describes the name of the segmentation, some auxiliary information and tells the hub how to get the annotation value and the range it can take.
+The purpose of this JSON structure is to describe a provider. Each data provider serves this structure at the /provider-interface URL path. The contents of the structure are filled in from episb-provider/episb-provider/src/main/resources/application.conf - a HOCON file that can (and should) be manually edited ([example](https://github.com/databio/episb-provider/blob/master/episb-provider/src/main/resources/application.conf)).
+
+## Experiment/segmentation pairing structure ##
+
+This structure tells a user (an episb-hub, for example), what segmentations the episb-provider is able to serve, but also all the experiments subscribing to these segmentations (internally this is implemented as a list of JSON objects - an example of which is below). The document describes the name of the segmentation, the name of the experiment subscribing to the segmentation, some auxiliary information and tells the hub how to get the annotation value and the range this value can take.
 
 For example,
 
@@ -94,4 +98,4 @@ For example,
 }
 ```
 
-Interface documents live in the "interfaces" index in Elastic search.
+The list of these documents lives in the "interfaces" index in Elastic search. API calls exist to get this list or search it for a particular segmentation, for example.

@@ -149,10 +149,8 @@ def fetch_provider_data(api_url):
       provider_res[provider['url']] = data
   return provider_res
 
-@app.route('/annotations', methods=["GET","POST"])
-def render_annotations():
-  # try all providers for ID
-  regionID = request.form.get("regionID")
+@app.route('/annotations/<regionID>')
+def render_annotations_regionid(regionID):
   url = '/experiments/get/ByRegionID/' + regionID
   provider_res = fetch_provider_data(url)
   if flask_port != '':
@@ -163,6 +161,17 @@ def render_annotations():
                          provider_res=provider_res,
                          regionID=regionID,
                          flask_host=fh)
+
+@app.route('/annotations', methods=["GET","POST"])
+def render_annotations():
+  # try all providers for ID
+  regionID = request.form.get("regionID")
+  return render_annotations_regionid(regionID)
+
+@app.route('/api/v1/annotations/<regionID>')
+def render_annotations_json(regionID):
+  url = '/experiments/get/ByRegionID/' + regionID
+  return jsonify(fetch_provider_data(url))
 
 @app.route('/region/<chrom>/<start>/<stop>')
 def render_segments(chrom,start,stop):
@@ -241,6 +250,7 @@ def render_segmentation_dropdown():
   minVal=0.0
   maxVal=100.0
   midVal=50.0
+  step=1.0
   
   if request.form.has_key("selected_provider"):
     providerUrl = request.form.get("selected_provider")
@@ -265,6 +275,7 @@ def render_segmentation_dropdown():
               minVal = float(e["annotationRangeStart"])
               maxVal = float(e["annotationRangeEnd"])
               midVal = (maxVal - minVal) / 2
+              step = (maxVal-minVal) / 100.0
               break
           
     return render_template("home.html",
@@ -277,7 +288,8 @@ def render_segmentation_dropdown():
                              exps=exps,
                              minVal=minVal,
                              maxVal=maxVal,
-                             midVal=midVal)
+                             midVal=midVal,
+                             step=step)
 
 @app.route('/')
 def index():

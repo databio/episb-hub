@@ -1,0 +1,5 @@
+FROM tiangolo/uwsgi-nginx-flask:python2.7-alpine3.7
+MAINTAINER "nem2p@virginia.edu
+
+COPY ./requirements.txt /app
+RUN pip install -r /app/requirements.txt

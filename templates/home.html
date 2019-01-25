@@ -2,6 +2,43 @@
 
 {% include 'menu.html' %}
 
+<div data-minval="{{ minVal }}" data-maxval="{{ maxVal }}" data-midval="{{ midVal }}" data-step="{{ step }}"</div>
+
+{% block head %}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+
+<script type=text/javascript>
+  var minVal = $( "div" ).data("minval");
+  var maxVal = $( "div" ).data("maxval");
+  var midVal = $( "div" ).data("midval");
+  var step = $( "div" ).data("step");
+  this.$row_append = $([
+      "<div class='input-group'>",
+      "<select style='width:20%'>",
+      "<option value='ge'>&ge;</option>",
+      "<option value='le'>&le;</option>",
+      "<option value='eq'>&equals;</option>",
+      "</select>",
+      "<span id='slider_value' class='form-control' style='width:20%'>'" + midVal + "' </span><br>",
+      "<label for='regionIDs'></label><input type='range' min=${minVal} max=${maxVal} value=${midVal} class='slider' id='myRange' style='width:75px' step=${step} oninput='show_value(this.value);'>",
+      "<a href='#' id='addrule'><button type='button' class='btn btn-secondary'>Add rule</button></a>",
+      "</div>"
+  ].join("\n"))
+  function append_filter() {
+      $( ".row" ).append( $row_append );
+      return false;
+    }
+  $(function() {
+    // The function is triggered on page load and with the "a#show_summary" button
+    $('a#addrule').bind('click', append_filter);
+  });
+</script>
+{% endblock %}
+
 <div class="container">
 
 <div id="queryTypes">
@@ -67,6 +104,7 @@
               {% endfor %}
             {% endif %}
           </select>
+        <br>
 
         <!-- <label for="segmentations">Segmentations:</label> -->
         <p>Segmentations:</p>
@@ -82,6 +120,7 @@
               {% endfor %}
             {% endif %}
           </select>
+        <br>
 
         <!-- <label for="experiments">Experiments:</label> -->
         <p>Experiments:</p>
@@ -97,37 +136,42 @@
               {% endfor %}
             {% endif %}
           </select>
+        <br>
+
 
         <p>Experiment Rules:</p>
-          <select name="Filter" class="form-control" style="width:60%">
-            <option value="ge">&ge;</option>
-            <option value="le">&le;</option>
-            <option value="eq">&equals;</option>
-          </select>
-          
-          <div class="rule-slider" style="width:200px;"></div>
-          <input type="number" class="rule-slider-number" />
+          <div id="slider-region">
+            <select name="Filter" class="form-control" style="width:60%">
+              <option value="ge">&ge;</option>
+              <option value="le">&le;</option>
+              <option value="eq">&equals;</option>
+            </select>
 
-        {% if (minVal is defined) and (maxVal is defined) and (midVal is defined) %}
-        <label for="regionIDs"></label><input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider" id="myRange" style="width:75px" onchange="show_value(this.value);">
-        {% else %}
-        <label for="regionIDs"></label><input type="range" min="1" max="100" value="50" class="slider" id="myRange" style="width:75px" onchange="show_value(this.value);">
-        {% endif %}
-        <button type="button" class="btn btn-secondary">Add rule</button>
+            <span class="slider_value" class="form-control" id="slider1" style="width:20%">{{midVal}}</span><br>
+            <label for="regionIDs"></label><input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider" id="myRange" style="width:75px" step="{{step}}" name="slider1" oninput="show_value(this.name, this.value);">
+          </div>
+          <br>
+          <a href='#' id="addrule"><button type="button" class="btn btn-secondary">Add rule</button></a>
+
+      </div>
+
+
         <button class="btn btn-primary btn-sm form-control">Search</button>
+
         <script>
-          $( ".rule-slider" ).slider({
-            range: "max",
-            min: {{ minVal }},
-            max: {{ maxVal }},
-            value: 0,
-            slide: function( event, ui ) {
-              $( ".rule-slider-number" ).val( ui.value );
-              $(ui.value).val($('.rule-slider-number').val());
-            }
-          });
-          $(".rule-slider-number").change(function() {
-            $(".rule-slider").slider("value", $(this).val());
+          // JQuery for Add Rule
+          var count = 1;
+          var this_name;
+          $('#addrule').click(function(){
+            count += 1;
+            this_name = "slider" + count.toString();
+            $('#slider-region').append(
+              '<select name="Filter" class="form-control" style="width:60%"><option value="ge">&ge;</option><option value="le">&le;</option><option value="eq">&equals;</option></select>'
+            ).append(
+              '<span class="slider_value" class="form-control" id=' + this_name + ' style="width:20%">{{midVal}}</span><br>'
+            ).append(
+              '<label for="regionIDs"></label><input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider" id="myRange" style="width:75px" step="{{step}}" name=' + this_name + ' oninput="show_value(this.name, this.value);">'
+            );
           });
         </script>
       </div>

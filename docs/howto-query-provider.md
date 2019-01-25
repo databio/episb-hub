@@ -1,6 +1,6 @@
 # How to query existing data
 
-***NB**: This document overlaps in content with the following [document](http://code.databio.org/episb/howto-use-episb-API-calls/)*
+***NB**: We have a different document that explains [how to use EPISB provider API](http://code.databio.org/episb/howto-use-episb-API-calls/) from software*
 
 You can find our prototype hub at [episb.org](http://episb.org), which will allow you to query various public data providers using several different query options. Any of these queries can be done either via the web using the [main episb.org hub](http://episb.org), or via programmatic API. For discussion on different query types, see the `query-type` issues: [https://github.com/databio/episb-hub/issues](https://github.com/databio/episb-hub/issues). 
 
@@ -10,7 +10,7 @@ Given `chr`, `start` and `stop` values, the hub returns any overlapping genomic 
 
 Via API:[http://episb.org/region/1/54321/500000](http://episb.org/region/1/54321/500000).
 
-JSON results can also be retrieved, add `/json/` to the endpoint: [http://episb.org/segment/json/1/54321/500000](http://episb.org/segment/json/1/54321/500000).
+JSON results can also be retrieved like so: [http://episb.org/api/v1/region/1/54321/500000](http://episb.org/api/v1/region/1/54321/500000).
 
 **Biological application**. Given a query genomic region or set of regions, or a particular experiment or set of experiments, the system will be able to return a filtered set of genomic segments that link to the given inputs. For example, a user may wish to query the set of TAD boundaries (found in a particular segmentation provider) associated with an input set of transcription factor binding sites.
 
@@ -38,6 +38,10 @@ Given a set of "regions", we need to convert these into "Segmentation Regions" (
 
 ## Query: Annotations
 
-Given a query region, retrieve experimental annotations.
+Given a query region, retrieve experimental annotations. For example, entering something like *DHS::9ff55240-9dd1-42ed-a963-98b127d09793* should bring up all the annotations from all the experiments currently stored within the provider that are linked with the DHS segmentation and the particular region within it.
+
+Via API: [http://episb.org/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793](http://episb.org/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793)
+
+JSON results can also be retrieved by going to [http://episb.org/api/v1/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793](http://episb.org/api/v1/annotations/DHS::9ff55240-9dd1-42ed-a963-98b127d09793)).
 
 **Biological application**. given a set of genetic variants from a GWAS study, return the functional annotations across data providers for each disease-associated SNP.

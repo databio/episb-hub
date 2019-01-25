@@ -35,6 +35,22 @@ $ docker run -d -p 80:80 --rm --name episb-hub <docker image>:<tag>
 $ docker stop episb-hub
 ```
 
+### Running the app in a container with development mode
+
+To run the container and have it reflect the changes, use the Dockerfile_dev to build the image:
+
+```
+docker build -f Dockerfile_dev -t <docker image>:<tag optional> .
+```
+
+To run the container:
+
+```
+$ docker run -v /path/to/host/episb-hub:/app -p 80:80 --rm --name episb-hub -e FLASK_APP=main.py -e FLASK_DEBUG=1 episb flask run --host=0.0.0.0 --port=80
+```
+
+Now the development container will be viewable on your `localhost` and update with any changes you make.
+
 ## ElasticSearch
 
 Note that this site requires ElasticSearch indices as a data provider for regions, experiments, segmentations, etc. Flask looks for ES indices at port 8080 of the localhost.
