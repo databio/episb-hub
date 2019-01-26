@@ -11,7 +11,7 @@
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
 
-<script type=text/javascript>
+<!-- <script type=text/javascript>
   var minVal = $( "div" ).data("minval");
   var maxVal = $( "div" ).data("maxval");
   var midVal = $( "div" ).data("midval");
@@ -36,7 +36,7 @@
     // The function is triggered on page load and with the "a#show_summary" button
     $('a#addrule').bind('click', append_filter);
   });
-</script>
+</script> -->
 {% endblock %}
 
 <div class="container">
@@ -141,14 +141,16 @@
 
         <p>Experiment Rules:</p>
           <div id="slider-region">
-            <select name="Filter" class="form-control" style="width:60%">
-              <option value="ge">&ge;</option>
-              <option value="le">&le;</option>
-              <option value="eq">&equals;</option>
-            </select>
+            <div class="row">
+              <select name="Filter" class="form-control" style="width:20%">
+                <option value="ge">&ge;</option>
+                <option value="le">&le;</option>
+                <option value="eq">&equals;</option>
+              </select>
 
-            <span class="slider_value" class="form-control" id="slider1" style="width:20%">{{midVal}}</span><br>
-            <label for="regionIDs"></label><input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider" id="myRange" style="width:75px" step="{{step}}" name="slider1" oninput="show_value(this.name, this.value);">
+              <span class="slider_value" class="form-control" id="slider1" style="width:20%">{{midVal}}</span><br>
+              <label for="regionIDs"></label><input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider" id="myRange" style="width:150px" step="{{step}}" name="slider1" oninput="show_value(this.name, this.value);">
+            </div>
           </div>
           <br>
           <a href='#' id="addrule"><button type="button" class="btn btn-secondary">Add rule</button></a>
@@ -162,16 +164,17 @@
           // JQuery for Add Rule
           var count = 1;
           var this_name;
+          var new_slider;
           $('#addrule').click(function(){
-            count += 1;
-            this_name = "slider" + count.toString();
+            this_name = "slider" + (++count).toString();
+            // JavaScript ES6 template string
+            new_slider = `<div class="row"><select name="Filter" class="form-control" style="width:20%"><option value="ge">&ge;</option><option value="le">&le;</option><option value="eq">&equals;</option></select>` +
+            `<span class="slider_value" class="form-control" id=${this_name} style="width:20%">{{midVal}}</span><br>` +
+            `<label for="regionIDs"></label>` +
+            `<input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider" id="myRange" style="width:150px" step="{{step}}" name=${this_name} oninput="show_value(this.name, this.value);"></div>`;
             $('#slider-region').append(
-              '<select name="Filter" class="form-control" style="width:60%"><option value="ge">&ge;</option><option value="le">&le;</option><option value="eq">&equals;</option></select>'
-            ).append(
-              '<span class="slider_value" class="form-control" id=' + this_name + ' style="width:20%">{{midVal}}</span><br>'
-            ).append(
-              '<label for="regionIDs"></label><input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider" id="myRange" style="width:75px" step="{{step}}" name=' + this_name + ' oninput="show_value(this.name, this.value);">'
-            );
+              new_slider
+            )
           });
         </script>
       </div>
