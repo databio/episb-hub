@@ -40,22 +40,29 @@
 {% endblock %}
 
 <div class="container">
+<div class="row">
+ <div class="col-md-3">
+ <div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix">
+    <div id="toc-collapse" class="navbar-collapse collapse card">
+        <h4 class="navhead">Query types</h4>
+      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#retrieveSegments" aria-expanded="false" aria-controls="retrieveSegments">Retrieve segments</button>
+      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#segfilt" aria-expanded="true" aria-controls="segfilt">Segmentation filter</button>
+      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#segmentation-match" aria-expanded="true" aria-controls="segmentation-match">Segmentation match</button>
+      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#query-annotations" aria-expanded="true" aria-controls="query-annotations">Query annotations</button>
+        </ul>
 
-<div id="queryTypes">
 
-<h1>Select query mode</h1>
-
-  <button class="btn btn-primary" type="button small" data-toggle="collapse" data-target="#retrieveSegments" aria-expanded="false" aria-controls="retrieveSegments">Retrieve segments</button>
-  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#segfilt" aria-expanded="true" aria-controls="segfilt">Segmentation filter</button>
-  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#segmentation-match" aria-expanded="true" aria-controls="segmentation-match">Segmentation match</button>
-  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#query-annotations" aria-expanded="true" aria-controls="query-annotations">Query annotations</button>
+    </div>
+    </div>
+</div>
+<div id="queryTypes" class="col-md-9" role="main">
 
   <div class="accordion-group">
 
   {% if show_regions %}
-  <div class="collapse col-sm-6 show" id="retrieveSegments" data-parent="#queryTypes">
+  <div class="collapse col-sm-12 show" id="retrieveSegments" data-parent="#queryTypes">
   {% else %}
-  <div class="collapse col-sm-6" id="retrieveSegments" data-parent="#queryTypes">
+  <div class="collapse col-sm-12" id="retrieveSegments" data-parent="#queryTypes">
   {% endif %}
     <h2>Retrieve segments</h2>
     <p>Given chr, start and stop values, the hub returns any overlapping segments from all segmentation providers linked to this hub.</p>
@@ -79,9 +86,9 @@
   </div>
 
   {% if show_segmentations %}
-  <div class="collapse col-sm-6 show" id="segfilt" data-parent="#queryTypes">
+  <div class="collapse col-sm-12 show" id="segfilt" data-parent="#queryTypes">
   {% else %}
-  <div class="collapse col-sm-6" id="segfilt" data-parent="#queryTypes">
+  <div class="collapse col-sm-12" id="segfilt" data-parent="#queryTypes">
   {% endif %}
     <h2>Segmentation filter</h2>
     <p>Starting with a Segmentation, filter to a biologically relevant subset of regions.</p>
@@ -182,7 +189,7 @@
   </div>
 
 
-  <div class="collapse col-sm-6" id="segmentation-match" data-parent="#queryTypes">
+  <div class="collapse col-sm-12" id="segmentation-match" data-parent="#queryTypes">
     <h2>Segmentation match</h2>
     <p>Given a region set, choose the best matching Segmentation.</p>
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#segmentationMatchModal">
@@ -198,7 +205,7 @@
   </div>
 
 
-  <div class="collapse col-sm-6" id="query-annotations" data-parent="#queryTypes">
+  <div class="collapse col-sm-12" id="query-annotations" data-parent="#queryTypes">
     <h2>Query annotations</h2>
     <p>Use a starting point and ending point for a search across records.</p>
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#queryAnnotationsModal">
@@ -301,5 +308,5 @@
     </div>
   </div>
 </div>
-
+</div>
 {% include 'foot.html' %}
