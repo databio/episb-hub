@@ -8,17 +8,19 @@ edit_uri: edit/dev/docs/
 nav:
   - Getting started:
     - Introducing episb: README.md
-  - How-to guides:
+  - HUB user guides:
     - Query types explained: howto-query-provider.md
     - Add a new provider to a hub: howto-subscribe.md
     - Normalize to a segmentation: howto-normalize.md
+  - HUB/Provider administrator guides:
     - Build a data provider: howto-build-provider.md
     - Build a hub: howto-build-hub.md
+  - HUB/Provider programmer's guides:
+    - Hub API: hub-api.md
     - Access data using R or python: howto-use-episb-API-calls.md
+    - Data provider API: provider-api.md
   - Reference:
     - Data organization: data-organization.md
-    - Data provider API: provider-api.md
-    - Hub API: hub-api.md
     - FAQ: faq.md
     - Support: support.md
     - Contributing: contributing.md
