@@ -17,10 +17,10 @@ nav:
     - Build a hub: howto-build-hub.md
   - Programmer's guides:
     - Access data using R or python: howto-use-episb-API-calls.md
-    - Data provider API: provider-api.md
   - Reference:
     - Data organization: data-organization.md
     - Hub API: hub-api.md
+    - Data provider API: provider-api.md
     - FAQ: faq.md
     - Support: support.md
     - Contributing: contributing.md
