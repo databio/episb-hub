@@ -12,11 +12,10 @@ nav:
     - Query types explained: howto-query-provider.md
     - Add a new provider to a hub: howto-subscribe.md
     - Normalize to a segmentation: howto-normalize.md
+    - Access data using R or python: howto-use-episb-API-calls.md
   - Administrator guides:
     - Build a data provider: howto-build-provider.md
     - Build a hub: howto-build-hub.md
-  - Programmer's guides:
-    - Access data using R or python: howto-use-episb-API-calls.md
   - Reference:
     - Data organization: data-organization.md
     - Hub API: hub-api.md
