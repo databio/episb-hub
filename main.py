@@ -1,7 +1,12 @@
-import json, urllib2, os
+import json, urllib2, os, signal, sys, ConfigParser
 
 from flask import Flask, render_template, request, redirect, jsonify, g, session
 from flask.json import JSONEncoder
+
+# global variables (yuck!) for init purposes
+default_provider=''
+flask_host=''
+flask_port=''
 
 class Provider:
   def __init__(self, url, name, desc, inst, admin, contact, provider, segs, regions, anns, exps):
@@ -43,44 +48,90 @@ class OpFeedback:
     self.success = success
     self.msg = msg
 
+def kill_flask():
+  os.kill(os.getpid(),signal.SIGKILL)
+
+# check if it is a real provider or just a random URL
+# expects a normalized url
+def is_real_provider(nurl):
+  try:
+    urlrq = urllib2.urlopen(nurl+'/provider-interface')
+    js = json.load(urlrq)
+    # are we clear to process the result list?
+    return (js.has_key('error') and js['error']=="None" and js.has_key('result'))
+  except Exception as e:
+    return False
+
+# normalize the url
+def normalize_provider_url(url):
+  if url.endswith("/"):
+    url = url[:-1]
+  if url.endswith("/provider-interface"):
+    url = url[:-19]
+  if not url.startswith('http://'):
+    url = url + 'http://'
+  return url
+
+# get normalized provider url from config file or die
+def read_config_file():
+  global default_provider
+  global flask_host
+  global flask_port
+  config = ConfigParser.SafeConfigParser()
+  try:
+    config.read('episb-hub.cfg')
+    default_provider = normalize_provider_url(config.get('Providers', 'DefaultProvider'))
+    if is_real_provider(default_provider):
+      print("Read in default_provider=%s from config file." % default_provider)
+    else:
+      print("Provider in config file does not respond to provider-interface API. Aborting.")
+      kill_flask()
+    flask_host = config.get('HubServer', 'host')
+    flask_port = config.get('HubServer', 'port')
+  except Exception as e:
+    print("No config file found or configuration is bad. Reason: %s. Aborting." % e.message)
+    kill_flask()
+
 app = Flask(__name__)
 app.secret_key = "episb-secret-key"
 app.json_encoder = EpisbJSONEncoder
+app.before_first_request(read_config_file)
 
-# uncomment the following five lines if running on localhost
-# with episb-provider running in default setup
-#es_host='localhost'
-#es_path=''
-#es_port='8080'
-#flask_host='localhost'
-#flask_port='5000'
+# check if we need to initialize providers session
+def need_to_init_providers():
+  if (not 'providers' in session) or session['providers']==None or not provider_in_session_object(default_provider):
+    return True
+  else:
+    False
 
-# production mode settings on "live" episb.org server
-#es_host='10.250.124.183'
-#es_path='/episb-provider'
-#es_port='8080'
-flask_host='episb.org'
-flask_port=''
-
-def init_providers():
-  add_provider("http://provider.episb.org/episb-provider/")
-
-# we are expecting a provider-interface kind of an URL
-# returns False if provided was not added, otherwise True
-def add_provider(url):
-  # strip out '/' at the end of the url
-  if url.endswith('/'):
-    url = url[:-1]
-  # and then strip out the provider-interface part
-  if url.endswith('provider-interface'):
-    url = url[:-19]
+# see if a url is already in session object
+def provider_in_session_object(url):
   # make sure provider url doesn't already exist
   if 'providers' in session:
     for p in session['providers']:
       if p['url'] == url:
-        return (False, "Provider already exists")
+        return True
+  return False
+
+# initialize providers session entry
+# default_provider value should have been initialized on entry to app
+def init_providers():
+  # add a default provider here
+  if need_to_init_providers():
+    (res, reason) = add_provider(default_provider)
+    if not res:
+      print("Error adding provider. Reason: ", reason)
+    else:
+      print("Provider %s added successfully" % default_provider)
+
+# we are expecting a provider-interface kind of an URL
+# returns False if provided was not added, otherwise True
+def add_provider(url):
+  nurl = normalize_provider_url(url)
+  if provider_in_session_object(nurl):
+    return (False, "Provider already exists")
   try:
-    urlrq = urllib2.urlopen(url+'/provider-interface')
+    urlrq = urllib2.urlopen(nurl+'/provider-interface')
     js = json.load(urlrq)
     # are we clear to process the result list?
     if js.has_key('error') and js['error']=="None":
@@ -88,7 +139,7 @@ def add_provider(url):
       if js.has_key('result'):
         res = js['result'][0]
         # add the provider here
-        provider = Provider(url,
+        provider = Provider(nurl,
                             res['providerName'],
                             res['providerDescription'],
                             res['providerInstitution'],
@@ -141,8 +192,7 @@ def fetch_provider_data_individual(provider_url, api_url):
 # returns dictionary indexed by provider url
 def fetch_provider_data(api_url):
   provider_res = {}
-  if (not 'providers' in session) or ('providers' in session and session['providers']==None):
-    init_providers()
+  init_providers()
   for provider in session['providers']:
     (feedback, data) = fetch_provider_data_individual(provider['url'], api_url)
     if feedback.success:
@@ -203,10 +253,8 @@ def render_about():
 
 @app.route('/subscriptions')
 def render_subscriptions():
-  if (not 'providers' in session) or ('providers' in session and session['providers']==None):
-    return render_template("subscriptions.html", providers=[])
-  else:
-    return render_template("subscriptions.html", providers=session['providers'])
+  init_providers()
+  return render_template("subscriptions.html", providers=session['providers'])
 
 @app.route("/get", methods=["GET","POST"])
 def get_segments():
@@ -293,8 +341,7 @@ def render_segmentation_dropdown():
 
 @app.route('/')
 def index():
-  if (not 'providers' in session) or ('providers' in session and session['providers']==None):
-    init_providers()
+  init_providers()
   return render_template("home.html", show_regions=True, provider_res=session['providers'])  
 
 def check_start_stop(start,stop):
@@ -303,6 +350,3 @@ def check_start_stop(start,stop):
   if not stop:
     stop = '0'
   return (int(stop) <= int(start))
-
-if __name__=='__main__':
-  app.run(host='0.0.0.0',port=8888,debug=True)
