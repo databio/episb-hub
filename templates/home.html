@@ -6,54 +6,26 @@
 
 {% block head %}
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type=text/javascript>
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
 
-<!-- <script type=text/javascript>
-  var minVal = $( "div" ).data("minval");
-  var maxVal = $( "div" ).data("maxval");
-  var midVal = $( "div" ).data("midval");
-  var step = $( "div" ).data("step");
-  this.$row_append = $([
-      "<div class='input-group'>",
-      "<select style='width:20%'>",
-      "<option value='ge'>&ge;</option>",
-      "<option value='le'>&le;</option>",
-      "<option value='eq'>&equals;</option>",
-      "</select>",
-      "<span id='slider_value' class='form-control' style='width:20%'>'" + midVal + "' </span><br>",
-      "<label for='regionIDs'></label><input type='range' min=${minVal} max=${maxVal} value=${midVal} class='slider' id='myRange' style='width:75px' step=${step} oninput='show_value(this.value);'>",
-      "<a href='#' id='addrule'><button type='button' class='btn btn-secondary'>Add rule</button></a>",
-      "</div>"
-  ].join("\n"))
-  function append_filter() {
-      $( ".row" ).append( $row_append );
-      return false;
-    }
-  $(function() {
-    // The function is triggered on page load and with the "a#show_summary" button
-    $('a#addrule').bind('click', append_filter);
-  });
-</script> -->
 {% endblock %}
 
 <div class="container">
+
 <div class="row">
  <div class="col-md-3">
- <div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix">
-    <div id="toc-collapse" class="navbar-collapse collapse card">
+   <div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix">
+      <div id="toc-collapse" class="navbar-collapse collapse card">
         <h4 class="navhead">Query types</h4>
-      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#retrieveSegments" aria-expanded="false" aria-controls="retrieveSegments">Retrieve segments</button>
-      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#segfilt" aria-expanded="true" aria-controls="segfilt">Segmentation filter</button>
-      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#segmentation-match" aria-expanded="true" aria-controls="segmentation-match">Segmentation match</button>
-      <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#query-annotations" aria-expanded="true" aria-controls="query-annotations">Query annotations</button>
-        </ul>
-
-
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#retrieveSegments" aria-expanded="false" aria-controls="retrieveSegments">Retrieve segments</button>
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#segfilt" aria-expanded="true" aria-controls="segfilt">Segmentation filter</button>
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#segmentation-match" aria-expanded="true" aria-controls="segmentation-match">Segmentation match</button>
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#query-annotations" aria-expanded="true" aria-controls="query-annotations">Query annotations</button>
+      </div>
     </div>
-    </div>
+  </div>
 </div>
 <div id="queryTypes" class="col-md-9" role="main">
 

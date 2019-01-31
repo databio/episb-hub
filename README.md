@@ -40,7 +40,7 @@ $ docker stop episb-hub
 To run the container and have it reflect the changes, use the Dockerfile_dev to build the image:
 
 ```
-docker build -f Dockerfile_dev -t <docker image>:<tag optional> .
+$ docker build -f Dockerfile_dev -t episb .
 ```
 
 To run the container:
