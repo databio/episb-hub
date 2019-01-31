@@ -59,11 +59,11 @@ The file has the following sections/variables:
 
 ```
 [Providers]
-DefaultProvider=\<URL of the data provider used to serve data to the hub\> (e.g. http://provider.episb.org/episb-provider)
+DefaultProvider=<URL of the data provider used to serve data to the hub> (e.g. http://provider.episb.org/episb-provider)
 
 [HubServer]
-ServerHost=\<URL of the host the hub is running on\> (e.g. http://episb.org)
-ServerPort=\<port the app is running on\> (e.g. 8080)
+ServerHost=<URL of the host the hub is running on> (e.g. http://episb.org)
+ServerPort=<port the app is running on> (e.g. 8080)
 ```
 
 ### Data provider
