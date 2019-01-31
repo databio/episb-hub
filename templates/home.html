@@ -151,9 +151,9 @@
               document.getElementById(name).value = value;
             }
             function slider_value(name, value){
-              // not yet working
               var element_name = 'input[name='+name+']';
-              $(element_name).setAttribute('value', value);
+              $(element_name).val(parseInt(value));
+              $(element_name).trigger('change');
             }
           </script>
     </div>
