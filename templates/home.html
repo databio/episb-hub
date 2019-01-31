@@ -15,8 +15,9 @@
 <div class="container">
 
 <div class="row">
- <div class="col-md-3">
-   <div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix">
+
+  <div class="col-md-3">
+    <div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix">
       <div id="toc-collapse" class="navbar-collapse collapse card">
         <h4 class="navhead">Query types</h4>
         <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#retrieveSegments" aria-expanded="false" aria-controls="retrieveSegments">Retrieve segments</button>
@@ -26,173 +27,170 @@
       </div>
     </div>
   </div>
-</div>
-<div id="queryTypes" class="col-md-9" role="main">
-
-  <div class="accordion-group">
-
-  {% if show_regions %}
-  <div class="collapse col-sm-12 show" id="retrieveSegments" data-parent="#queryTypes">
-  {% else %}
-  <div class="collapse col-sm-12" id="retrieveSegments" data-parent="#queryTypes">
-  {% endif %}
-    <h2>Retrieve segments</h2>
-    <p>Given chr, start and stop values, the hub returns any overlapping segments from all segmentation providers linked to this hub.</p>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#retrieveSegmentsModal">
-      Help
-    </button>    
-    <form method="POST" action="/get" class="from-inline">
-    <div class="row">
-	  <div class="form-group col-md-4">
-        <label for="chrom">Chromosome:</label><input type="text" name="chrom" id="chrom" class="form-control" />
-      </div>
-      <div class="form-group col-md-4">
-        <label for="startval">Start Value:</label><input type="text" name="start" id="startval" class="form-control" />
-      </div>
-      <div class="form-group col-md-4">
-        <label for="stopval">Stop Value:</label><input type="text" name="stop" id="stopval" class="form-control" />
-      </div>
-      <button class="btn btn-primary btn-sm form-control">Search</button>
-    </div>
-    </form>
-  </div>
-
-  {% if show_segmentations %}
-  <div class="collapse col-sm-12 show" id="segfilt" data-parent="#queryTypes">
-  {% else %}
-  <div class="collapse col-sm-12" id="segfilt" data-parent="#queryTypes">
-  {% endif %}
-    <h2>Segmentation filter</h2>
-    <p>Starting with a Segmentation, filter to a biologically relevant subset of regions.</p>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#segmentationFilterModal">
-      Help
-    </button>     
-    <form method="POST" action="/segmentations">
-      <div class="form-group">
-        <!-- <label for="provider">Provider:</label> -->
-        <p>Provider:</p>
-          <select name="selected_provider" id="selected_provider" class="form-control" onchange="this.form.submit()">
-            {% if providerUrl is defined %}
-            <option value="{{providerUrl}}" selected>{{ providerUrl }}</option>
-            {% else %}
-            <option value="" selected> - Select a provider - </option>
-            {% endif %}
-            {% if (provider_res is defined) and provider_res %}
-              {% for provider in provider_res %}
-                <option value="{{ provider.url }}">{{ provider.name }}</option>
-              {% endfor %}
-            {% endif %}
-          </select>
-        <br>
-
-        <!-- <label for="segmentations">Segmentations:</label> -->
-        <p>Segmentations:</p>
-          <select name="segmentation_name" id="segmentation_name" class="form-control" onchange="this.form.submit()">
-            {% if segmName is defined %}
-            <option value="{{segmName}}" selected>{{segmName}} </option>
-            {% else %}
-            <option value="" selected> - Select a segmentation - </option>
-            {% endif %}
-            {% if (segm is defined) and segm %}
-              {% for s in segm.result %}
-                <option value="{{providerUrl}}!{{s}}">{{ s }}</option>
-              {% endfor %}
-            {% endif %}
-          </select>
-        <br>
-
-        <!-- <label for="experiments">Experiments:</label> -->
-        <p>Experiments:</p>
-          <select name="experiment_name" id="experiment_name" class="form-control" onchange="this.form.submit()">
-            {% if expName is defined %}
-              <option value="{{expName}}" selected>{{expName}} </option>
-            {% else %}
-              <option value="" selected> - Select an experiment - </option>
-            {% endif %}
-            {% if (exps is defined) and exps %}
-              {% for s in exps.result %}
-                <option value="{{providerUrl}}!{{segmName}}!{{s}}">{{ s }}</option>
-              {% endfor %}
-            {% endif %}
-          </select>
-        <br>
 
 
-        <p>Experiment Rules:</p>
-          <div id="slider-region">
-            <div class="row">
-              <select name="Filter" class="form-control" style="width:20%">
-                <option value="ge">&ge;</option>
-                <option value="le">&le;</option>
-                <option value="eq">&equals;</option>
-              </select>
-
-              <span class="slider_value" class="form-control" id="slider1" style="width:20%">{{midVal}}</span><br>
-              <label for="regionIDs"></label><input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider" id="myRange" style="width:150px" step="{{step}}" name="slider1" oninput="show_value(this.name, this.value);">
-            </div>
+  <div id="queryTypes" class="col-md-9" role="main">
+    <div class="accordion-group">
+      {% if show_regions %}
+      <div class="collapse col-sm-12 show" id="retrieveSegments" data-parent="#queryTypes">
+      {% else %}
+      <div class="collapse col-sm-12" id="retrieveSegments" data-parent="#queryTypes">
+      {% endif %}
+        <h2>Retrieve segments</h2>
+        <p>Given chr, start and stop values, the hub returns any overlapping segments from all segmentation providers linked to this hub.</p>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#retrieveSegmentsModal">
+          Help
+        </button>    
+        <form method="POST" action="/get" class="from-inline">
+        <div class="row">
+    	  <div class="form-group col-md-4">
+            <label for="chrom">Chromosome:</label><input type="text" name="chrom" id="chrom" class="form-control" />
           </div>
-          <br>
-          <a href='#' id="addrule"><button type="button" class="btn btn-secondary">Add rule</button></a>
-
-      </div>
-
-
-        <button class="btn btn-primary btn-sm form-control">Search</button>
-
-        <script>
-          // JQuery for Add Rule
-          var count = 1;
-          var this_name;
-          var new_slider;
-          $('#addrule').click(function(){
-            this_name = "slider" + (++count).toString();
-            // JavaScript ES6 template string
-            new_slider = `<div class="row"><select name="Filter" class="form-control" style="width:20%"><option value="ge">&ge;</option><option value="le">&le;</option><option value="eq">&equals;</option></select>` +
-            `<span class="slider_value" class="form-control" id=${this_name} style="width:20%">{{midVal}}</span><br>` +
-            `<label for="regionIDs"></label>` +
-            `<input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider" id="myRange" style="width:150px" step="{{step}}" name=${this_name} oninput="show_value(this.name, this.value);"></div>`;
-            $('#slider-region').append(
-              new_slider
-            )
-          });
-        </script>
-      </div>
-    </form>
-  </div>
-
-
-  <div class="collapse col-sm-12" id="segmentation-match" data-parent="#queryTypes">
-    <h2>Segmentation match</h2>
-    <p>Given a region set, choose the best matching Segmentation.</p>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#segmentationMatchModal">
-      Help
-    </button>     
-    <form method="POST" action="/get">
-        <div class="custom-file">
-          <input type="file" class="custom-file-input" id="customFile">
-          <label class="custom-file-label" for="customFile">Choose file</label>
+          <div class="form-group col-md-4">
+            <label for="startval">Start Value:</label><input type="text" name="start" id="startval" class="form-control" />
+          </div>
+          <div class="form-group col-md-4">
+            <label for="stopval">Stop Value:</label><input type="text" name="stop" id="stopval" class="form-control" />
+          </div>
+          <button class="btn btn-primary btn-sm form-control">Search</button>
         </div>
-        <button class="btn btn-primary btn-sm form-control" disabled>Search</button>
-    </form>
-  </div>
-
-
-  <div class="collapse col-sm-12" id="query-annotations" data-parent="#queryTypes">
-    <h2>Query annotations</h2>
-    <p>Use a starting point and ending point for a search across records.</p>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#queryAnnotationsModal">
-      Help
-    </button>     
-    <form method="POST" action="/annotations">
-      <div class="input-group">
-        <label for="regionIDs">Region IDs:</label><input type="text" name="regionID" id="regionID" class="form-control"/>
-        <button class="btn btn-primary btn-sm form-control">Search</button>
+        </form>
       </div>
-    </form>
-  </div>
 
-</div>
-</div>
+      {% if show_segmentations %}
+      <div class="collapse col-sm-12 show" id="segfilt" data-parent="#queryTypes">
+      {% else %}
+      <div class="collapse col-sm-12" id="segfilt" data-parent="#queryTypes">
+      {% endif %}
+        <h2>Segmentation filter</h2>
+        <p>Starting with a Segmentation, filter to a biologically relevant subset of regions.</p>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#segmentationFilterModal">
+          Help
+        </button>     
+        <form method="POST" action="/segmentations">
+          <div class="form-group">
+
+            <p>Provider:</p>
+              <select name="selected_provider" id="selected_provider" class="form-control" onchange="this.form.submit()">
+                {% if providerUrl is defined %}
+                <option value="{{providerUrl}}" selected>{{ providerUrl }}</option>
+                {% else %}
+                <option value="" selected> - Select a provider - </option>
+                {% endif %}
+                {% if (provider_res is defined) and provider_res %}
+                  {% for provider in provider_res %}
+                    <option value="{{ provider.url }}">{{ provider.name }}</option>
+                  {% endfor %}
+                {% endif %}
+              </select>
+            <br>
+
+            <p>Segmentations:</p>
+              <select name="segmentation_name" id="segmentation_name" class="form-control" onchange="this.form.submit()">
+                {% if segmName is defined %}
+                <option value="{{segmName}}" selected>{{segmName}} </option>
+                {% else %}
+                <option value="" selected> - Select a segmentation - </option>
+                {% endif %}
+                {% if (segm is defined) and segm %}
+                  {% for s in segm.result %}
+                    <option value="{{providerUrl}}!{{s}}">{{ s }}</option>
+                  {% endfor %}
+                {% endif %}
+              </select>
+            <br>
+
+            <p>Experiments:</p>
+              <select name="experiment_name" id="experiment_name" class="form-control" onchange="this.form.submit()">
+                {% if expName is defined %}
+                  <option value="{{expName}}" selected>{{expName}} </option>
+                {% else %}
+                  <option value="" selected> - Select an experiment - </option>
+                {% endif %}
+                {% if (exps is defined) and exps %}
+                  {% for s in exps.result %}
+                    <option value="{{providerUrl}}!{{segmName}}!{{s}}">{{ s }}</option>
+                  {% endfor %}
+                {% endif %}
+              </select>
+            <br>
+
+
+            <p>Experiment Rules:</p>
+              <div id="slider-region"></div>
+              <br>
+              <a id="addrule"><button type="button" class="btn btn-secondary">Add rule</button></a>
+
+          </div>
+          <button class="btn btn-primary btn-sm form-control">Search</button>
+        </form>
+
+          <script>
+            // JQuery for Add Rule
+            var count = 1;
+            var this_name;
+            var new_slider;
+            $('#addrule').click(function(){
+              this_name = "slider" + (count++).toString();
+              // JavaScript ES6 template string
+              new_slider = `
+                <div class="row" style="width:350px; margin-left:20px;">
+                  <select name="Filter" class="form-control" style="width:20%;">
+                    <option value="ge">&ge;</option>
+                    <option value="le">&le;</option>
+                    <option value="eq">&equals;</option>
+                  </select>
+
+                  <input class="slider_value form-control" id="${this_name}" style="width:25%; text-align: center;" oninput="slider_value(this.id, this.value)">{{midVal}}</input>
+                  <input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider" id="myRange" style="width:150px" step="{{step}}" name="${this_name}" oninput="show_value(this.name, this.value);">
+                </div>`;
+              $('#slider-region').append(new_slider);
+            });
+            // for displaying slider values
+            function show_value(name, value){
+              document.getElementById(name).value = value;
+            }
+            function slider_value(name, value){
+              // not yet working
+              var element_name = 'input[name='+name+']';
+              $(element_name).setAttribute('value', value);
+            }
+          </script>
+    </div>
+    </div>
+
+
+    <div class="collapse col-sm-12" id="segmentation-match" data-parent="#queryTypes">
+      <h2>Segmentation match</h2>
+      <p>Given a region set, choose the best matching Segmentation.</p>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#segmentationMatchModal">
+        Help
+      </button>     
+      <form method="POST" action="/get">
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" id="customFile">
+            <label class="custom-file-label" for="customFile">Choose file</label>
+          </div>
+          <button class="btn btn-primary btn-sm form-control" disabled>Search</button>
+      </form>
+    </div>
+
+
+    <div class="collapse col-sm-12" id="query-annotations" data-parent="#queryTypes">
+      <h2>Query annotations</h2>
+      <p>Use a starting point and ending point for a search across records.</p>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#queryAnnotationsModal">
+        Help
+      </button>     
+      <form method="POST" action="/annotations">
+        <div class="input-group">
+          <label for="regionIDs">Region IDs:</label><input type="text" name="regionID" id="regionID" class="form-control"/>
+          <button class="btn btn-primary btn-sm form-control">Search</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
 </div>
 
 
