@@ -86,8 +86,8 @@ def read_config_file():
     else:
       print("Provider in config file does not respond to provider-interface API. Aborting.")
       kill_flask()
-    flask_host = config.get('HubServer', 'host')
-    flask_port = config.get('HubServer', 'port')
+    flask_host = config.get('HubServer', 'ServerHost')
+    flask_port = config.get('HubServer', 'ServerPort')
   except Exception as e:
     print("No config file found or configuration is bad. Reason: %s. Aborting." % e.message)
     kill_flask()

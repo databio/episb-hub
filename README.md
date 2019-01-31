@@ -8,7 +8,7 @@ User documentation can be found at http://databio.org/episb
 FLASK_APP="main.py" flask run
 ```
 
-Point browser to http://localhost:8888/
+Point browser to http://localhost:5000/
 
 
 ## Running the app in a container
@@ -51,10 +51,22 @@ $ docker run -v /path/to/host/episb-hub:/app -p 80:80 --rm --name episb-hub -e F
 
 Now the development container will be viewable on your `localhost` and update with any changes you make.
 
-## ElasticSearch
+### Configuration
 
-Note that this site requires ElasticSearch indices as a data provider for regions, experiments, segmentations, etc. Flask looks for ES indices at port 8080 of the localhost.
+Starting with release 0.3, setting variables in a configuration file named 'episb-hub.cfg' is required.
 
+The file has the following sections/variables:
+
+[Providers]
+DefaultProvider=\<URL of the data provider used to serve data to the hub\> (e.g. http://provider.episb.org/episb-provider)
+
+[HubServer]
+ServerHost=\<URL of the host the hub is running on\> (e.g. http://episb.org)
+ServerPort=\<port the app is running on\> (e.g. 8080)
+
+### Data provider
+
+Episb-hub depends on the APIs served to it by a [data provider](https://github.com/databio/episb-provider/tree/master/episb-provider)
 
 ## Docs:
 
