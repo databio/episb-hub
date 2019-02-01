@@ -120,7 +120,7 @@
                   <p style="margin-left: 20px;">Experiment Rules:</p>
                     <div class="slider-region"></div>
                     <a class="addOR" id="experiment1" style="margin-left: 10px;"><button type="button" class="btn btn-link">Add OR</button></a>
-                  <br>
+                  <hr />
                 </div>
             </div>
 
@@ -133,49 +133,63 @@
         </form>
 
           <script>
-            // JQuery for Add Rule
+            // Add OR
             var rule_count = 1;
-            var this_name;
-            var new_slider;
-            var experiment_region;
             $(document).on('click', '.addOR', function(){
-              this_rule = "slider" + (rule_count++).toString();
+              var this_rule = "slider" + (rule_count++).toString();
               // JavaScript ES6 template string
-              experiment_region = "." + $(this).attr('id') + " .slider-region";
+              var experiment_region = "." + $(this).attr('id') + " .slider-region";
 
               console.log(experiment_region);
-              new_slider = `
+              var new_slider = `
                 <div class="row" style="margin-left:20px;">
-                  <select name="Filter" class="form-control col-1">
+                  <select name="Filter" class="form-control" style="width:40px;">
                     <option value="ge">&ge;</option>
                     <option value="le">&le;</option>
                     <option value="eq">&equals;</option>
                   </select>
 
-                  <input class="slider_value form-control col-2" id="${this_rule}" value="{{midVal}}" style="width:25%; text-align: center;" oninput="slider_value(this.id, this.value)">
-                  <input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider col-3" id="myRange" step="{{step}}" name="${this_rule}" oninput="show_value(this.name, this.value);">
-                  <a class="col-3" id="addAND" style="margin-left: 20px;"><button type="button" class="btn btn-link">Add AND</button></a>
+                  <input class="slider_value form-control col-2" id="${this_rule}" value="{{midVal}}" style="text-align: center;" oninput="slider_value(this.id, this.value)">
+                  <input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider col-2" id="myRange" step="{{step}}" name="${this_rule}" oninput="show_value(this.name, this.value);">
+                  <a class="col-3 addAND" style="margin-left: 20px;"><button type="button" class="btn btn-link">Add AND</button></a>
                 </div>`;
               $(experiment_region).append(new_slider);
             });
-            // for displaying slider values
+            // for displaying slider values in the text box and vice versa
             function show_value(name, value){
               document.getElementById(name).value = value;
             }
             function slider_value(name, value){
               var element_name = 'input[name='+name+']';
-              $(element_name).val(parseInt(value));
+              $(element_name).val(parseFloat(value));
               $(element_name).trigger('change');
             }
 
-            // JQuery for Add Experiment
+
+            // Add AND
+            $(document).on('click', '.addAND', function(){
+              var row = $(this).parent();
+              $(this).remove();
+              var this_rule = "slider" + (rule_count++).toString();
+              row.append(
+                `<p style="margin: 5px 20px 5px 20px; text-align:">AND</p>
+                  <select name="Filter" class="form-control" style="width:40px;">
+                    <option value="ge">&ge;</option>
+                    <option value="le">&le;</option>
+                    <option value="eq">&equals;</option>
+                  </select>
+
+                  <input class="slider_value form-control col-2" id="${this_rule}" value="{{midVal}}" style="text-align: center;" oninput="slider_value(this.id, this.value)">
+                  <input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider col-2" id="myRange" step="{{step}}" name="${this_rule}" oninput="show_value(this.name, this.value);">`
+              );
+            })
+
+
+            // Add Experiment
             var experiment_count = 1;
-            var experiment_id;
-            var new_experiment;
             $(document).on('click', '#addExperiment', function(){
-              experiment_id = "experiment" + (++experiment_count).toString();
-              new_experiment =  `
-                <hr />
+              var experiment_id = "experiment" + (++experiment_count).toString();
+              var new_experiment =  `
                 <div class="${experiment_id}">
                   <select name="experiment_name" id="experiment_name" class="form-control" onchange="this.form.submit()">
                     {% if expName is defined %}
@@ -194,7 +208,7 @@
                   <p style="margin-left: 20px;">Experiment Rules:</p>
                     <div class="slider-region"></div>
                     <a class="addOR" id="${experiment_id}" style="margin-left: 10px;"><button type="button" class="btn btn-link">Add OR</button></a>
-                  <br>
+                  <hr />
                 </div>`;
               $('#experiment-region').append(new_experiment);
             });
