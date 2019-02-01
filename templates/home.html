@@ -37,10 +37,10 @@
       <div class="collapse col-sm-12" id="retrieveSegments" data-parent="#queryTypes">
       {% endif %}
         <h2>Retrieve segments</h2>
-        <p>Given chr, start and stop values, the hub returns any overlapping segments from all segmentation providers linked to this hub.</p>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#retrieveSegmentsModal">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#retrieveSegmentsModal" style="float: right;">
           Help
-        </button>    
+        </button>
+        <p>Given chr, start and stop values, the hub returns any overlapping segments from all segmentation providers linked to this hub.</p>
         <form method="POST" action="/get" class="from-inline">
         <div class="row">
     	  <div class="form-group col-md-4">
@@ -63,10 +63,10 @@
       <div class="collapse col-sm-12" id="segfilt" data-parent="#queryTypes">
       {% endif %}
         <h2>Segmentation filter</h2>
-        <p>Starting with a Segmentation, filter to a biologically relevant subset of regions.</p>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#segmentationFilterModal">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#segmentationFilterModal" style="float: right;">
           Help
-        </button>     
+        </button>
+        <p>Starting with a Segmentation, filter to a biologically relevant subset of regions.</p>
         <form method="POST" action="/segmentations">
           <div class="form-group">
 
@@ -119,7 +119,7 @@
 
                   <p style="margin-left: 20px;">Experiment Rules:</p>
                     <div class="slider-region"></div>
-                    <a class="addOR" id="experiment1" style="margin-left: 10px;"><button type="button" class="btn btn-link">Add OR</button></a>
+                    <button type="button" class="addOR btn btn-link" id="experiment1" style="margin-left: 10px;">Add OR</button>
                   <hr />
                 </div>
             </div>
@@ -127,9 +127,8 @@
             <a id="addExperiment"><button type="button" class="btn btn-secondary">Add Experiment</button></a>
 
 
-
           </div>
-          <button class="btn btn-primary btn-sm form-control">Search</button>
+          <button class="btn btn-primary btn-sm form-control" id="search-segmentation-filter">Search</button>
         </form>
 
           <script>
@@ -151,7 +150,8 @@
 
                   <input class="slider_value form-control col-2" id="${this_rule}" value="{{midVal}}" style="text-align: center;" oninput="slider_value(this.id, this.value)">
                   <input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider col-2" id="myRange" step="{{step}}" name="${this_rule}" oninput="show_value(this.name, this.value);">
-                  <a class="col-3 addAND" style="margin-left: 20px;"><button type="button" class="btn btn-link">Add AND</button></a>
+                  <button type="button" class="col-3 addAND btn btn-link" style="margin-left: 20px;">Add AND</button>
+                  <button type="button" class="close" style="margin-left:40px;"><span aria-hidden="true">&times;</span></button>
                 </div>`;
               $(experiment_region).append(new_slider);
             });
@@ -171,18 +171,23 @@
               var row = $(this).parent();
               $(this).remove();
               var this_rule = "slider" + (rule_count++).toString();
-              row.append(
-                `<p style="margin: 5px 20px 5px 20px; text-align:">AND</p>
+              var closeButton = row.children().last();
+              $(`<p style="margin: 5px 20px 5px 20px; text-align:">AND</p>
                   <select name="Filter" class="form-control" style="width:40px;">
                     <option value="ge">&ge;</option>
                     <option value="le">&le;</option>
-                    <option value="eq">&equals;</option>
                   </select>
 
                   <input class="slider_value form-control col-2" id="${this_rule}" value="{{midVal}}" style="text-align: center;" oninput="slider_value(this.id, this.value)">
                   <input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider col-2" id="myRange" step="{{step}}" name="${this_rule}" oninput="show_value(this.name, this.value);">`
-              );
-            })
+              ).insertBefore(closeButton);
+            });
+
+
+            // Remove Rule
+            $(document).on('click', '.close', function(){
+              $(this).parent().remove();
+            });
 
 
             // Add Experiment
@@ -207,7 +212,7 @@
 
                   <p style="margin-left: 20px;">Experiment Rules:</p>
                     <div class="slider-region"></div>
-                    <a class="addOR" id="${experiment_id}" style="margin-left: 10px;"><button type="button" class="btn btn-link">Add OR</button></a>
+                    <button type="button" class="addOR btn btn-link" id="${experiment_id}" style="margin-left: 10px;">Add OR</button>
                   <hr />
                 </div>`;
               $('#experiment-region').append(new_experiment);
@@ -219,10 +224,10 @@
 
     <div class="collapse col-sm-12" id="segmentation-match" data-parent="#queryTypes">
       <h2>Segmentation match</h2>
-      <p>Given a region set, choose the best matching Segmentation.</p>
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#segmentationMatchModal">
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#segmentationMatchModal" style="float: right;">
         Help
-      </button>     
+      </button>
+      <p>Given a region set, choose the best matching Segmentation.</p>
       <form method="POST" action="/get">
           <div class="custom-file">
             <input type="file" class="custom-file-input" id="customFile">
@@ -235,10 +240,10 @@
 
     <div class="collapse col-sm-12" id="query-annotations" data-parent="#queryTypes">
       <h2>Query annotations</h2>
-      <p>Use a starting point and ending point for a search across records.</p>
-      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#queryAnnotationsModal">
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#queryAnnotationsModal" style="float: right;">
         Help
-      </button>     
+      </button>
+      <p>Use a starting point and ending point for a search across records.</p>
       <form method="POST" action="/annotations">
         <div class="input-group">
           <label for="regionIDs">Region IDs:</label><input type="text" name="regionID" id="regionID" class="form-control"/>
