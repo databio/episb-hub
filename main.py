@@ -231,26 +231,17 @@ def get_segmentations():
   url = "/segmentations/list/all"
   return fetch_provider_data(url)
   
-def get_experiments_by_segmentation_name(providerUrl, segName):
-  url = "/experiments/list/BySegmentationName/"
-  try:
-    url_req = urllib2.urlopen(providerUrl + url + segName)
-    experiments_list = json.load(url_req)
-    return experiments_list
-  except urllib2.URLError as e:
-    return None
-
 @app.route('/segmentations', methods=["GET","POST"])
 def render_segmentation_dropdown():
   segm=[]
-  exps=[]
+  # a list of quintuples describing each experiment (name, min, mid, max, step)
+  # passed to form for better control/checking when selecting multiple experiments
+  # and filters on such experiments
+  exp_pass_to_template = []
   segmName="- Select a segmentation -"
   expName="- Select an experiment -"
   segm_by_provider = get_segmentations()
-  minVal=0.0
-  maxVal=100.0
-  midVal=50.0
-  step=1.0
+  
   
   if request.form.has_key("selected_provider"):
     providerUrl = request.form.get("selected_provider")
@@ -261,23 +252,15 @@ def render_segmentation_dropdown():
       if len(s)>1:
         providerUrl = s[0]
         segmName = s[1]
-        exps = get_experiments_by_segmentation_name(providerUrl,segmName)
-      if request.form.has_key("experiment_name"):
-        e = request.form.get("experiment_name").split('!')
-        if len(e)>2:
-          segmName = e[1]
-          expName = e[2]
-          # get the annotations for this experiment
-          api_url = "/experiments/list/full/BySegmentationName/" + segmName
-          (status, ei) = fetch_provider_data_individual(providerUrl, api_url)
-          for e in ei["result"]:
-            if e["experimentName"] == expName:
-              minVal = float(e["annotationRangeStart"])
-              maxVal = float(e["annotationRangeEnd"])
-              midVal = (maxVal - minVal) / 2
-              step = (maxVal-minVal) / 100.0
-              break
-          
+        # get all experiment names with associated min/max ranges
+        api_url = "/experiments/list/full/BySegmentationName/" + segmName
+        (status, exps_by_segmentation) = fetch_provider_data_individual(providerUrl, api_url)
+        for e in exps_by_segmentation["result"]:
+          minVal = float(e["annotationRangeStart"])
+          maxVal = float(e["annotationRangeEnd"])
+          midVal = (maxVal - minVal) / 2
+          step = (maxVal-minVal) / 100.0
+          exp_pass_to_template.append((e["experimentName"],minVal,midVal,maxVal,step))      
     return render_template("home.html",
                              show_segmentations=True,
                              provider_res=session['providers'],
@@ -285,11 +268,7 @@ def render_segmentation_dropdown():
                              segmName=segmName,
                              expName=expName,
                              segm=segm_by_provider[providerUrl],
-                             exps=exps,
-                             minVal=minVal,
-                             maxVal=maxVal,
-                             midVal=midVal,
-                             step=step)
+                             exps=exp_pass_to_template)
 
 @app.route('/')
 def index():
