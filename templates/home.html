@@ -103,16 +103,16 @@
             <div id="experiment-region">
               <p>Experiments:</p>
                 <div class="experiment1">
-                  <select name="experiment_name" id="experiment_name" class="form-control" onchange="this.form.submit()">
+                  <select name="experiment_name" class="form-control experiment_name">
                     {% if expName is defined %}
                       <option value="{{expName}}" selected>{{expName}} </option>
                     {% else %}
                       <option value="" selected> - Select an experiment - </option>
                     {% endif %}
                     {% if (exps is defined) and exps %}
-                      {% for s in exps.result %}
-                        <option value="{{providerUrl}}!{{segmName}}!{{s}}">{{ s }}</option>
-                      {% endfor %}
+                       {% for exp in exps.iterkeys() %}
+                          <option value="{{providerUrl}}!{{segmName}}!{{exp}}">{{ exp }}</option>
+                       {% endfor %}
                     {% endif %}
                   </select>
                   <br>
@@ -132,24 +132,44 @@
         </form>
 
           <script>
+            var my_exps = {{ exps|tojson }};
+            console.log(my_exps);
+
+            // Detect experiment selected and change the slider values
+            $(document).on('change', '.experiment_name', function(){
+              console.log(my_exps);
+              var selected = $(this).val().split("!").slice(-1)[0]; //get last element split by !
+              var parent = $(this).parent();
+              var sliders = parent.find('.slider');
+              var slider_values = parent.find('.slider_value');
+              console.log(slider_values);
+              console.log(selected);
+              for(var i = 0; i < sliders.length; i++){
+                sliders[i].min = my_exps[selected][0];
+                sliders[i].value = my_exps[selected][1];
+                sliders[i].max = my_exps[selected][2];
+                sliders[i].step = my_exps[selected][3];
+              }
+              for(var i = 0; i < slider_values.length; i++){
+                slider_values[i].value = my_exps[selected][1];
+              }
+            });
+            
             // Add OR
             var rule_count = 1;
             $(document).on('click', '.addOR', function(){
               var this_rule = "slider" + (rule_count++).toString();
-              // JavaScript ES6 template string
               var experiment_region = "." + $(this).attr('id') + " .slider-region";
-
-              console.log(experiment_region);
               var new_slider = `
                 <div class="row" style="margin-left:20px;">
-                  <select name="Filter" class="form-control" style="width:40px;">
+                  <select name="Filter" class="form-control" style="width:45px;">
                     <option value="ge">&ge;</option>
                     <option value="le">&le;</option>
                     <option value="eq">&equals;</option>
                   </select>
 
-                  <input class="slider_value form-control col-2" id="${this_rule}" value="{{midVal}}" style="text-align: center;" oninput="slider_value(this.id, this.value)">
-                  <input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider col-2" id="myRange" step="{{step}}" name="${this_rule}" oninput="show_value(this.name, this.value);">
+                  <input class="slider_value form-control col-2" id="${this_rule}" value="50" style="text-align: center;" oninput="slider_value(this.id, this.value)">
+                  <input type="range" min="0" max="100" value="50" class="slider col-2" id="myRange" step="1" name="${this_rule}" oninput="show_value(this.name, this.value);">
                   <button type="button" class="col-3 addAND btn btn-link" style="margin-left: 20px;">Add AND</button>
                   <button type="button" class="close" style="margin-left:40px;"><span aria-hidden="true">&times;</span></button>
                 </div>`;
@@ -173,13 +193,13 @@
               var this_rule = "slider" + (rule_count++).toString();
               var closeButton = row.children().last();
               $(`<p style="margin: 5px 20px 5px 20px; text-align:">AND</p>
-                  <select name="Filter" class="form-control" style="width:40px;">
+                  <select name="Filter" class="form-control" style="width:45px;">
                     <option value="ge">&ge;</option>
                     <option value="le">&le;</option>
                   </select>
 
-                  <input class="slider_value form-control col-2" id="${this_rule}" value="{{midVal}}" style="text-align: center;" oninput="slider_value(this.id, this.value)">
-                  <input type="range" min="{{minVal}}" max="{{maxVal}}" value="{{midVal}}" class="slider col-2" id="myRange" step="{{step}}" name="${this_rule}" oninput="show_value(this.name, this.value);">`
+                  <input class="slider_value form-control col-2" id="${this_rule}" value="50" style="text-align: center;" oninput="slider_value(this.id, this.value)">
+                  <input type="range" min="0" max="100" value="50" class="slider col-2" id="myRange" step="1" name="${this_rule}" oninput="show_value(this.name, this.value);">`
               ).insertBefore(closeButton);
             });
 
@@ -196,16 +216,16 @@
               var experiment_id = "experiment" + (++experiment_count).toString();
               var new_experiment =  `
                 <div class="${experiment_id}">
-                  <select name="experiment_name" id="experiment_name" class="form-control" onchange="this.form.submit()">
+                  <select name="experiment_name" class="form-control experiment_name">
                     {% if expName is defined %}
-                      <option value="{{expName}}" selected>{{expName}} </option>
+                      <option value="{{expName}}" selected> {{expName}} </option>
                     {% else %}
                       <option value="" selected> - Select an experiment - </option>
                     {% endif %}
                     {% if (exps is defined) and exps %}
-                      {% for s in exps.result %}
-                        <option value="{{providerUrl}}!{{segmName}}!{{s}}">{{ s }}</option>
-                      {% endfor %}
+                       {% for exp in exps.iterkeys() %}
+                          <option value="{{providerUrl}}!{{segmName}}!{{exp}}">{{ exp }}</option>
+                       {% endfor %}
                     {% endif %}
                   </select>
                   <br>
