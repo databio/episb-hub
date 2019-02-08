@@ -237,11 +237,10 @@ def render_segmentation_dropdown():
   # a list of quintuples describing each experiment (name, min, mid, max, step)
   # passed to form for better control/checking when selecting multiple experiments
   # and filters on such experiments
-  exp_pass_to_template = []
+  exp_pass_to_template = {}
   segmName="- Select a segmentation -"
   expName="- Select an experiment -"
   segm_by_provider = get_segmentations()
-  
   
   if request.form.has_key("selected_provider"):
     providerUrl = request.form.get("selected_provider")
@@ -260,7 +259,7 @@ def render_segmentation_dropdown():
           maxVal = float(e["annotationRangeEnd"])
           midVal = (maxVal - minVal) / 2
           step = (maxVal-minVal) / 100.0
-          exp_pass_to_template.append((e["experimentName"],minVal,midVal,maxVal,step))      
+          exp_pass_to_template[e["experimentName"]] = (minVal,midVal,maxVal,step)
     return render_template("home.html",
                              show_segmentations=True,
                              provider_res=session['providers'],
