@@ -134,22 +134,30 @@
           <script>
             var my_exps = {{ exps|tojson }};
             console.log(my_exps);
+            var exp_ids = {'experiment1': [0, 50, 100, 1]};
 
             // Detect experiment selected and change the slider values
             $(document).on('change', '.experiment_name', function(){
               console.log(my_exps);
               var selected = $(this).val().split("!").slice(-1)[0]; //get last element split by !
-              var parent = $(this).parent();
-              var sliders = parent.find('.slider');
-              var slider_values = parent.find('.slider_value');
-              console.log(slider_values);
               console.log(selected);
+
+              var parent = $(this).parent();
+
+              var exp_id = parent.attr('class');
+              exp_ids[exp_id] = my_exps[selected];
+              console.log(exp_ids);
+
+              var sliders = parent.find('.slider');
               for(var i = 0; i < sliders.length; i++){
                 sliders[i].min = my_exps[selected][0];
                 sliders[i].value = my_exps[selected][1];
                 sliders[i].max = my_exps[selected][2];
                 sliders[i].step = my_exps[selected][3];
               }
+
+              var slider_values = parent.find('.slider_value');
+              console.log(slider_values);
               for(var i = 0; i < slider_values.length; i++){
                 slider_values[i].value = my_exps[selected][1];
               }
@@ -158,8 +166,15 @@
             // Add OR
             var rule_count = 1;
             $(document).on('click', '.addOR', function(){
+              var this_exp = $(this).attr('id');
+
+              var slider_min = exp_ids[this_exp][0];
+              var slider_value = exp_ids[this_exp][1];
+              var slider_max = exp_ids[this_exp][2];
+              var slider_step = exp_ids[this_exp][3];
+
               var this_rule = "slider" + (rule_count++).toString();
-              var experiment_region = "." + $(this).attr('id') + " .slider-region";
+              var experiment_region = "." + this_exp + " .slider-region";
               var new_slider = `
                 <div class="row" style="margin-left:20px;">
                   <select name="Filter" class="form-control" style="width:45px;">
@@ -168,8 +183,8 @@
                     <option value="eq">&equals;</option>
                   </select>
 
-                  <input class="slider_value form-control col-2" id="${this_rule}" value="50" style="text-align: center;" oninput="slider_value(this.id, this.value)">
-                  <input type="range" min="0" max="100" value="50" class="slider col-2" id="myRange" step="1" name="${this_rule}" oninput="show_value(this.name, this.value);">
+                  <input class="slider_value form-control col-2" id="${this_rule}" value="${slider_value}" style="text-align: center;" oninput="slider_value(this.id, this.value)">
+                  <input type="range" min="${slider_min}" max="${slider_max}" value="${slider_value}" class="slider col-2" id="myRange" step="${slider_step}" name="${this_rule}" oninput="show_value(this.name, this.value);">
                   <button type="button" class="col-3 addAND btn btn-link" style="margin-left: 20px;">Add AND</button>
                   <button type="button" class="close" style="margin-left:40px;"><span aria-hidden="true">&times;</span></button>
                 </div>`;
@@ -189,7 +204,15 @@
             // Add AND
             $(document).on('click', '.addAND', function(){
               var row = $(this).parent();
-              $(this).remove();
+              $(this).remove(); // remove Add And button
+
+              var this_exp = row.parent().parent().attr('class');
+
+              var slider_min = exp_ids[this_exp][0];
+              var slider_value = exp_ids[this_exp][1];
+              var slider_max = exp_ids[this_exp][2];
+              var slider_step = exp_ids[this_exp][3];
+
               var this_rule = "slider" + (rule_count++).toString();
               var closeButton = row.children().last();
               $(`<p style="margin: 5px 20px 5px 20px; text-align:">AND</p>
@@ -198,8 +221,8 @@
                     <option value="le">&le;</option>
                   </select>
 
-                  <input class="slider_value form-control col-2" id="${this_rule}" value="50" style="text-align: center;" oninput="slider_value(this.id, this.value)">
-                  <input type="range" min="0" max="100" value="50" class="slider col-2" id="myRange" step="1" name="${this_rule}" oninput="show_value(this.name, this.value);">`
+                  <input class="slider_value form-control col-2" id="${this_rule}" value="${slider_value}" style="text-align: center;" oninput="slider_value(this.id, this.value)">
+                  <input type="range" min="${slider_min}" max="${slider_max}" value="${slider_value}" class="slider col-2" id="myRange" step="${slider_step}" name="${this_rule}" oninput="show_value(this.name, this.value);">`
               ).insertBefore(closeButton);
             });
 
@@ -214,6 +237,9 @@
             var experiment_count = 1;
             $(document).on('click', '#addExperiment', function(){
               var experiment_id = "experiment" + (++experiment_count).toString();
+              exp_ids[experiment_id] = [0, 50, 100, 1];
+              console.log(exp_ids);
+
               var new_experiment =  `
                 <div class="${experiment_id}">
                   <select name="experiment_name" class="form-control experiment_name">
