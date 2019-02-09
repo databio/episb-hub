@@ -273,7 +273,14 @@ def render_segmentation_dropdown():
 def index():
   if (not 'providers' in session) or ('providers' in session and session['providers']==None):
     init_providers()
-  return render_template("home.html", show_regions=True, provider_res=session['providers'])  
+  return render_template("home.html",
+                         show_regions=True,
+                         provider_res=session['providers'],
+                         providerUrl="- Select a provider -",
+                         segmName="- Select a segmentation -",
+                         expName="- Select an experiment -",
+                         segm="",
+                         exps={})
 
 def check_start_stop(start,stop):
   if not start:
