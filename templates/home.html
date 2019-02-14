@@ -100,24 +100,46 @@
 
             <div id="experiment-region">
               <p>Experiments:</p>
-                <div class="experiment1">
-                  <select name="experiment_name" class="form-control experiment_name">
-                    {% if expName is defined %}
-                      <option value="{{expName}}" selected>{{expName}} </option>
-                    {% else %}
-                      <option value="" selected> - Select an experiment - </option>
-                    {% endif %}
-                    {% if (exps is defined) and exps %}
-                       {% for exp in exps.iterkeys() %}
-                          <option value="{{providerUrl}}!{{segmName}}!{{exp}}">{{ exp }}</option>
-                       {% endfor %}
-                    {% endif %}
-                  </select>
+              <hr />
+                <div class="experiment0">
+                  <div class="form-row">
+                    <div class="col">
+                      <select name="experiment0" class="form-control experiment_name">
+                        {% if expName is defined %}
+                          <option value="{{expName}}" selected>{{expName}} </option>
+                        {% else %}
+                          <option value="" selected> - Select an experiment - </option>
+                        {% endif %}
+                        {% if (exps is defined) and exps %}
+                           {% for exp in exps.iterkeys() %}
+                              <option value="{{providerUrl}}!{{segmName}}!{{exp}}">{{ exp }}</option>
+                           {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                  </div>
                   <br>
 
-                  <p style="margin-left: 20px;">Experiment Rules:</p>
-                    <div class="slider-region"></div>
-                    <button type="button" class="addOR btn btn-link" id="experiment1" style="margin-left: 10px;">Add OR</button>
+                  <p>Experiment Rules:</p>
+
+                    <div class="form-row" style="margin: auto;">
+                      <div class="col">
+                        <select name="operator0" class="form-control">
+                          <option value="ge">&ge;</option>
+                          <option value="le">&le;</option>
+                          <option value="eq">&equals;</option>
+                        </select>
+                      </div>
+
+                      <div class="col">
+                        <input type="number" class="form-control slider_value" name="value0" min="0" max="100" value="50" step="1" style="text-align: center;" oninput="slider_value(this.name, this.value)" />
+                      </div>
+
+                      <div class="col">
+                        <input type="range" class="form-control slider" id="slider0" min="0" max="100" value="50" step="1" oninput="show_value(this.id, this.value);" />
+                      </div>
+                    </div>
+
                   <hr />
                 </div>
             </div>
@@ -126,141 +148,176 @@
 
 
           </div>
-          <button class="btn btn-primary btn-sm form-control" id="search-segmentation-filter">Search</button>
+          <button type="submit" class="btn btn-primary" id="search-segmentation-filter">Search</button>
         </form>
 
           <script>
-            var my_exps = {{ exps|tojson }};
-            console.log(my_exps);
-            var exp_ids = {'experiment1': [0, 50, 100, 1]};
+            var all_exps = {{ exps|tojson }}; // read the flask dictionary into javascript
+            var exp_ids = {'experiment0': [0, 50, 100, 1]}; // initialize slider values for the first default experiment
+            var experiment_count = 1; // one experiment is displayed initially
+
 
             // Detect experiment selected and change the slider values
             $(document).on('change', '.experiment_name', function(){
-              console.log(my_exps);
-              var selected = $(this).val().split("!").slice(-1)[0]; //get last element split by !
-              console.log(selected);
+              var selected = $(this).val().split("!").slice(-1)[0]; // the value of the options contain !
 
-              var parent = $(this).parent();
+              var exp_id = $(this).parent().attr('name'); // set the dict value of the selected experiment
+              exp_ids[exp_id] = all_exps[selected];
 
-              var exp_id = parent.attr('class');
-              exp_ids[exp_id] = my_exps[selected];
-              console.log(exp_ids);
-
-              var sliders = parent.find('.slider');
+              var sliders = $(this).parent().parent().parent().find('.slider'); // find sliders in the experiment
+              var slider_values = $(this).parent().parent().parent().find('.slider_value'); // find slider number values
               for(var i = 0; i < sliders.length; i++){
-                sliders[i].min = my_exps[selected][0];
-                sliders[i].value = my_exps[selected][1];
-                sliders[i].max = my_exps[selected][2];
-                sliders[i].step = my_exps[selected][3];
-              }
+                sliders[i].min = all_exps[selected][0];
+                sliders[i].value = all_exps[selected][1];
+                sliders[i].max = all_exps[selected][2];
+                sliders[i].step = all_exps[selected][3];
 
-              var slider_values = parent.find('.slider_value');
-              console.log(slider_values);
-              for(var i = 0; i < slider_values.length; i++){
-                slider_values[i].value = my_exps[selected][1];
+                slider_values[i].min = all_exps[selected][0];
+                slider_values[i].value = all_exps[selected][1];
+                slider_values[i].max = all_exps[selected][2];
+                slider_values[i].step = all_exps[selected][3];
               }
             });
             
-            // Add OR
-            var rule_count = 1;
-            $(document).on('click', '.addOR', function(){
-              var this_exp = $(this).attr('id');
+            // // Add OR       
+            // $(document).on('click', '.addOR', function(){
+            //   var this_exp = $(this).attr('id');
 
-              var slider_min = exp_ids[this_exp][0];
-              var slider_value = exp_ids[this_exp][1];
-              var slider_max = exp_ids[this_exp][2];
-              var slider_step = exp_ids[this_exp][3];
+            //   var slider_min = exp_ids[this_exp][0];
+            //   var slider_value = exp_ids[this_exp][1];
+            //   var slider_max = exp_ids[this_exp][2];
+            //   var slider_step = exp_ids[this_exp][3];
 
-              var this_rule = "slider" + (rule_count++).toString();
-              var experiment_region = "." + this_exp + " .slider-region";
-              var new_slider = `
-                <div class="row" style="margin-left:20px;">
-                  <select name="Filter" class="form-control" style="width:65px;">
-                    <option value="ge">&ge;</option>
-                    <option value="le">&le;</option>
-                    <option value="eq">&equals;</option>
-                  </select>
+            //   var this_operator = "operator" + (rule_count++).toString();
+            //   var this_rule = "slider" + (rule_count++).toString();
+            //   var experiment_region = "." + this_exp + " .slider-region";
+            //   var new_slider = `
+                // <div class="row" style="margin: auto;">
+                //   <select name="operator0" class="form-control" style="width:65px;">
+                //     <option value="ge">&ge;</option>
+                //     <option value="le">&le;</option>
+                //     <option value="eq">&equals;</option>
+                //   </select>
 
-                  <input class="slider_value form-control col-2" id="${this_rule}" value="${slider_value}" style="text-align: center;" oninput="slider_value(this.id, this.value)">
-                  <input type="range" min="${slider_min}" max="${slider_max}" value="${slider_value}" class="slider col-2" id="myRange" step="${slider_step}" name="${this_rule}" oninput="show_value(this.name, this.value);">
-                  <button type="button" class="col-3 addAND btn btn-link" style="margin-left: 20px;">Add AND</button>
-                  <button type="button" class="close" style="margin-left:40px;"><span aria-hidden="true">&times;</span></button>
-                </div>`;
-              $(experiment_region).append(new_slider);
-            });
+                //   <input class="slider_value form-control col-2" id="${this_rule}" value="${slider_value}" style="text-align: center;" oninput="slider_value(this.id, this.value)">
+                //   <input type="range" min="${slider_min}" max="${slider_max}" value="${slider_value}" class="slider col-2" id="myRange" step="${slider_step}" name="${this_rule}" oninput="show_value(this.name, this.value);">
+                //   <button type="button" class="col-3 addAND btn btn-link" style="margin-left: 20px;">Add AND</button>
+                //   <button type="button" class="close remove-rule" style="margin-left:40px;"><span aria-hidden="true">&times;</span></button>
+                // </div>`;
+            //   $(experiment_region).append(new_slider);
+            // });
+
+
             // for displaying slider values in the text box and vice versa
-            function show_value(name, value){
-              document.getElementById(name).value = value;
+            function show_value(id, value){
+              var number_input_name = "value" + id.slice(6); // remove the "slider" from the id, leaving only the #
+              $("input[name="+number_input_name+"]").val(parseFloat(value));
+              $("input[name="+number_input_name+"]").trigger('change');
             }
             function slider_value(name, value){
-              var element_name = 'input[name='+name+']';
-              $(element_name).val(parseFloat(value));
-              $(element_name).trigger('change');
+              var slider_id = "slider" + name.slice(5); // remove the "value" from the name
+              document.getElementById(slider_id).value = parseFloat(value);
             }
 
 
-            // Add AND
-            $(document).on('click', '.addAND', function(){
-              var row = $(this).parent();
-              $(this).remove(); // remove Add And button
+            // // Add AND
+            // $(document).on('click', '.addAND', function(){
+            //   var row = $(this).parent();
+            //   $(this).remove(); // remove Add And button
 
-              var this_exp = row.parent().parent().attr('class');
+            //   var this_exp = row.parent().parent().attr('class');
 
-              var slider_min = exp_ids[this_exp][0];
-              var slider_value = exp_ids[this_exp][1];
-              var slider_max = exp_ids[this_exp][2];
-              var slider_step = exp_ids[this_exp][3];
+            //   var slider_min = exp_ids[this_exp][0];
+            //   var slider_value = exp_ids[this_exp][1];
+            //   var slider_max = exp_ids[this_exp][2];
+            //   var slider_step = exp_ids[this_exp][3];
 
-              var this_rule = "slider" + (rule_count++).toString();
-              var closeButton = row.children().last();
-              $(`<p style="margin: 5px 20px 5px 20px; text-align:">AND</p>
-                  <select name="Filter" class="form-control" style="width:65px;">
-                    <option value="ge">&ge;</option>
-                    <option value="le">&le;</option>
-                  </select>
+            //   var this_rule = "slider" + (rule_count++).toString();
+            //   var removeButton = row.children().last();
+            //   $(`<p style="margin: 5px 20px 5px 20px; text-align:">AND</p>
+            //       <select name="Filter" class="form-control" style="width:65px;">
+            //         <option value="ge">&ge;</option>
+            //         <option value="le">&le;</option>
+            //       </select>
 
-                  <input class="slider_value form-control col-2" id="${this_rule}" value="${slider_value}" style="text-align: center;" oninput="slider_value(this.id, this.value)">
-                  <input type="range" min="${slider_min}" max="${slider_max}" value="${slider_value}" class="slider col-2" id="myRange" step="${slider_step}" name="${this_rule}" oninput="show_value(this.name, this.value);">`
-              ).insertBefore(closeButton);
-            });
+            //       <input class="slider_value form-control col-2" id="${this_rule}" value="${slider_value}" style="text-align: center;" oninput="slider_value(this.id, this.value)">
+            //       <input type="range" min="${slider_min}" max="${slider_max}" value="${slider_value}" class="slider col-2" id="myRange" step="${slider_step}" name="${this_rule}" oninput="show_value(this.name, this.value);">`
+            //   ).insertBefore(removeButton);
+            // });
 
-
-            // Remove Rule
-            $(document).on('click', '.close', function(){
-              $(this).parent().remove();
-            });
+            // // Remove Rule
+            // $(document).on('click', '.remove-rule', function(){
+            //   $(this).parent().remove();
+            // });
 
 
             // Add Experiment
-            var experiment_count = 1;
             $(document).on('click', '#addExperiment', function(){
-              var experiment_id = "experiment" + (++experiment_count).toString();
+              experiment_count++;
+              var experiment_id = "experiment" + experiment_count.toString();
+              var operator_name = "operator" + experiment_count.toString();
+              var value_name = "value" + experiment_count.toString();
+              var slider_id = "slider" + experiment_count.toString();
               exp_ids[experiment_id] = [0, 50, 100, 1];
-              console.log(exp_ids);
 
               var new_experiment =  `
                 <div class="${experiment_id}">
-                  <select name="experiment_name" class="form-control experiment_name">
-                    {% if expName is defined %}
-                      <option value="{{expName}}" selected> {{expName}} </option>
-                    {% else %}
-                      <option value="" selected> - Select an experiment - </option>
-                    {% endif %}
-                    {% if (exps is defined) and exps %}
-                       {% for exp in exps.iterkeys() %}
-                          <option value="{{providerUrl}}!{{segmName}}!{{exp}}">{{ exp }}</option>
-                       {% endfor %}
-                    {% endif %}
-                  </select>
+                  <div class="form-row">
+                    <div class="col">
+                      <select name="${experiment_id}" class="form-control experiment_name">
+                        {% if expName is defined %}
+                          <option value="{{expName}}" selected>{{expName}} </option>
+                        {% else %}
+                          <option value="" selected> - Select an experiment - </option>
+                        {% endif %}
+                        {% if (exps is defined) and exps %}
+                           {% for exp in exps.iterkeys() %}
+                              <option value="{{providerUrl}}!{{segmName}}!{{exp}}">{{ exp }}</option>
+                           {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+                      
+                    <div class="col">
+                      <button type="button" class="btn btn-danger remove-experiment">Remove Experiment</button>
+                    </div>
+                  </div>
                   <br>
 
-                  <p style="margin-left: 20px;">Experiment Rules:</p>
-                    <div class="slider-region"></div>
-                    <button type="button" class="addOR btn btn-link" id="${experiment_id}" style="margin-left: 10px;">Add OR</button>
+                  <p>Experiment Rules:</p>
+
+                    <div class="form-row" style="margin: auto;">
+                      <div class="col">
+                        <select name="${operator_name}" class="form-control">
+                          <option value="ge">&ge;</option>
+                          <option value="le">&le;</option>
+                          <option value="eq">&equals;</option>
+                        </select>
+                      </div>
+
+                      <div class="col">
+                        <input type="number" class="form-control slider_value" name="${value_name}" min="0" max="100" value="50" step="1" style="text-align: center;" oninput="slider_value(this.name, this.value)" />
+                      </div>
+
+                      <div class="col">
+                        <input type="range" class="form-control slider" id="${slider_id}" min="0" max="100" value="50" step="1" oninput="show_value(this.id, this.value);" />
+                      </div>
+                    </div>
+
                   <hr />
                 </div>`;
               $('#experiment-region').append(new_experiment);
             });
+
+            // Remove Experiment
+            $(document).on('click', '.remove-experiment', function(){
+              $(this).parent().parent().parent().remove();
+            });
+
+            // Reset JavaScript variables
+            // function segmentationsSubmit(){
+            //   return false;
+            // }
           </script>
     </div>
     </div>

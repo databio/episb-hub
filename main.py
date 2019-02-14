@@ -242,6 +242,9 @@ def render_segmentation_dropdown():
   expName="- Select an experiment -"
   segm_by_provider = get_segmentations()
   
+  if request.method == "POST":
+    print(request.form)
+
   if request.form.has_key("selected_provider"):
     providerUrl = request.form.get("selected_provider")
     if request.form.has_key("segmentation_name"):
