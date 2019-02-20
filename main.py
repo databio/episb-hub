@@ -139,20 +139,26 @@ def fetch_provider_data_individual(provider_url, api_url):
 
 # fetch data in json format from all providers in session
 # returns dictionary indexed by provider url
-def fetch_provider_data(api_url):
+# FIXME: how do we propagate errors?!
+def fetch_provider_data(provider, api_url):
   provider_res = {}
   if (not 'providers' in session) or ('providers' in session and session['providers']==None):
     init_providers()
-  for provider in session['providers']:
-    (feedback, data) = fetch_provider_data_individual(provider['url'], api_url)
+  if provider=="":
+    for provider in session['providers']:
+      (feedback, data) = fetch_provider_data_individual(provider['url'], api_url)
+      if feedback.success:
+        provider_res[provider['url']] = data
+  else:
+    (feedback, data) = fetch_provider_data_individual(provider, api_url)
     if feedback.success:
-      provider_res[provider['url']] = data
+      provider_res[provider] = data
   return provider_res
 
 @app.route('/annotations/<regionID>')
 def render_annotations_regionid(regionID):
   url = '/experiments/get/ByRegionID/' + regionID
-  provider_res = fetch_provider_data(url)
+  provider_res = fetch_provider_data("",url)
   if flask_port != '':
     fh = flask_host+':'+flask_port 
   else:
@@ -171,7 +177,7 @@ def render_annotations():
 @app.route('/api/v1/annotations/<regionID>')
 def render_annotations_json(regionID):
   url = '/experiments/get/ByRegionID/' + regionID
-  return jsonify(fetch_provider_data(url))
+  return jsonify(fetch_provider_data("",url))
 
 @app.route('/region/<chrom>/<start>/<stop>')
 def render_segments(chrom,start,stop):
@@ -180,7 +186,7 @@ def render_segments(chrom,start,stop):
     return render_template("error.html", errmsg="STOP value must be greater than or equal to START value")
   # organize results by provider
   url = "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
-  provider_res = fetch_provider_data(url)
+  provider_res = fetch_provider_data("",url)
   # now after we are done with all providers, display results
   if flask_port != '':
     fh = flask_host+':'+flask_port 
@@ -191,7 +197,7 @@ def render_segments(chrom,start,stop):
 @app.route('/api/v1/region/<chrom>/<start>/<stop>')
 def render_segments_json(chrom,start,stop):
   url = "/segments/get/fromSegment/" + chrom + "/" + start + "/" + stop
-  return jsonify(fetch_provider_data(url))
+  return jsonify(fetch_provider_data("",url))
 
 @app.route('/api')
 def render_api():
@@ -225,12 +231,31 @@ def get_segments():
 @app.route('/api/v1/segmentations')
 def render_segmentations():
   url = "/segmentations/get/all"
-  return jsonify(fetch_provider_data(url))
+  return jsonify(fetch_provider_data("",url))
 
 def get_segmentations():
   url = "/segmentations/list/all"
-  return fetch_provider_data(url)
-  
+  return fetch_provider_data("",url)
+
+def get_annotations(provider, exp, op1, val1, op2, val2):
+  url = "/experiments/get/ByName/" + exp
+
+  if op1=="ge": operator1="gte"
+  elif op1=="le": operator1="lte"
+  elif op1=="eq": operator1="eq"
+  else: operator1=""
+  if op2=="ge": operator2="gte"
+  elif op2=="le": operator2="lte"
+  elif op2=="eq": operator2="eq"
+  else: operator2=""
+
+  # FIXME: we should not really have operator1 ever be ""
+  url = url + "?op1=" + operator1 + "&val1=" + val1
+  if operator2 != "":
+    url = url + "&op2=" + operator2 + "&val2=" + val2
+  print("Fetching URL=", url)
+  return fetch_provider_data(provider, url)
+
 @app.route('/segmentations', methods=["GET","POST"])
 def render_segmentation_dropdown():
   segm=[]
@@ -241,21 +266,35 @@ def render_segmentation_dropdown():
   segmName="- Select a segmentation -"
   expName="- Select an experiment -"
   segm_by_provider = get_segmentations()
-  
-  if request.method == "POST":
-    print(request.form)
 
-  if request.form.has_key("selected_provider"):
+  for k in request.form.keys():
+    print("key=%s, value=%s" % (k, request.form.get(k)))
+
+  # get all experiments that have been passed into the form, if any
+  exps = [k for k in request.form.keys() if k.startswith("experiment")]
+  print("exps=%s" % exps)
+
+  # if no experiments and operators have been passed - offer up the form to choose from
+  if request.form.has_key("selected_provider") and request.form.get("selected_provider") != "- Select a provider -":
     providerUrl = request.form.get("selected_provider")
-    if request.form.has_key("segmentation_name"):
-      # here we already chose a segemntation
-      # now we need to get the segmentations for the provider
-      s = request.form.get("segmentation_name").split('!')
-      if len(s)>1:
-        providerUrl = s[0]
-        segmName = s[1]
+    if request.form.has_key("segmentation_name") and request.form.get("segmentation_name") != "- Select a segmentation -":
+      form_seg_name = request.form.get("segmentation_name")
+      print("form_seg_name=%s" % form_seg_name)
+      if form_seg_name.find("!") != -1:
+        # here we already chose a segmentation
+        # now we need to get the segmentations for the provider
+        s = request.form.get("segmentation_name").split('!')
+        if len(s)>1:
+          providerUrl = s[0]
+          segmName = s[1]
+      else:
         # get all experiment names with associated min/max ranges
+        segmName = form_seg_name
+      print("len(exps)=%d" % len(exps))
+      print("form(experiment0)=%s" % request.form.get("experiment0"))
+      if len(exps)==0 or (len(exps)==1 and exps[0]=="experiment0" and request.form.get("experiment0")=="- Select an experiment -"):
         api_url = "/experiments/list/full/BySegmentationName/" + segmName
+        print("privider=%s, segName=%s, apiUrl=%s" % (providerUrl, segmName, api_url))
         (status, exps_by_segmentation) = fetch_provider_data_individual(providerUrl, api_url)
         for e in exps_by_segmentation["result"]:
           minVal = float(e["annotationRangeStart"])
@@ -263,14 +302,79 @@ def render_segmentation_dropdown():
           midVal = (maxVal - minVal) / 2
           step = (maxVal-minVal) / 100.0
           exp_pass_to_template[e["experimentName"]] = (minVal,midVal,maxVal,step)
+      else:
+        # the user actually pressed the search button and we have experiments to extract
+        # get names of experiments
+        exp_names = dict([(e[10:],request.form.get(e).split("!")[2]) for e in exps])
+        ops = dict([(op[8:],request.form.get(op)) for op in [k for k in request.form.keys() if k.startswith("operator")]])
+        vals = dict([(val[5:],request.form.get(val)) for val in [k for k in request.form.keys() if k.startswith("value")]])
+        print(exp_names)
+        print(ops)
+        print(vals)
+        # make a dictonary indexed by an experiment name
+        exp_dict = {}
+        for k in exp_names:
+          exp_name = exp_names[k]
+          if exp_dict.has_key(exp_name):
+            exp_dict[exp_name].append((ops[k],vals[k]))
+          else:
+            exp_dict[exp_name] = [(ops[k],vals[k])]
+        print exp_dict
+        # try and get data out of these
+        # the difficulty is in consolidating multiple operators on the same experiment
+        # see if we can consolidate all ops to the smallest number of them
+        exp_dict_consolidated = {}
+        for k in exp_dict.keys():
+          exp_lst = exp_dict[k]
+          op_dict={}
+          for (op,val) in exp_lst:
+            if op_dict.has_key(op):
+              op_dict[op].append(val)
+            else:
+              op_dict[op] = [val]
+          
+          for op in op_dict.keys():
+            if op=="ge" and len(op_dict[op])>1:
+              op_dict[op] = min(op_dict[op])
+            elif op=="le" and len(op_dict[op])>1:
+              op_dict[op] = max(op_dict[op])
+          exp_dict_consolidated[k] = op_dict
+        print(exp_dict_consolidated)
+        
+        for k in exp_dict_consolidated.keys():
+          print("Experiment=", k)
+          exp_consolidated = exp_dict_consolidated[k]
+          # do we have an "eq" key?
+          # each "eq" query is separate
+          if exp_consolidated.has_key("eq"):
+            for eq_val in exp_consolidated[op]:
+              data = get_annotations(providerUrl, k, "eq", eq_val, "", "")
+              print("exp=%s, op=EQ, data=%s" % (k, data))
+          if exp_consolidated.has_key("ge") and exp_consolidated.has_key("le"):
+            data = get_annotations(providerUrl, k, "ge", exp_consolidated["ge"], "le", exp_consolidated["le"])
+            print("exp=%s, op=GE&&LE, data=%s" % (k, data))
+          else:
+            if exp_consolidated.has_key("ge"):
+              data = get_annotations(providerUrl, k, "ge", exp_consolidated["ge"][0], "", "")
+              print("exp=%s, op=GE, data=%s" % (k, data))
+            elif exp_consolidated.has_key("le"):
+              data = get_annotations(providerUrl, k, "le", exp_consolidated["le"][0], "", "")
+              print("exp=%s, op=LE, data=%s" % (k, data))
+            else:
+              data = ""
+              print("exp=%s, op=NONE, data=%s" % (k, data))
+        
     return render_template("home.html",
-                             show_segmentations=True,
-                             provider_res=session['providers'],
-                             providerUrl=providerUrl,
-                             segmName=segmName,
-                             expName=expName,
-                             segm=segm_by_provider[providerUrl],
-                             exps=exp_pass_to_template)
+                           show_segmentations=True,
+                           provider_res=session['providers'],
+                           providerUrl=providerUrl,
+                           segmName=segmName,
+                           expName=expName,
+                           segm=segm_by_provider[providerUrl],
+                           exps=exp_pass_to_template)
+  else:
+    return render_template("error.html", errmsg="Search initiated without values. Please return and choose value from form.")
+    
 
 @app.route('/')
 def index():
