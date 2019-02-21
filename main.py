@@ -250,10 +250,10 @@ def get_annotations(provider, exp, op1, val1, op2, val2):
   else: operator2=""
 
   # FIXME: we should not really have operator1 ever be ""
+  # but the episb-provider API will catch this anyways
   url = url + "?op1=" + operator1 + "&val1=" + val1
   if operator2 != "":
     url = url + "&op2=" + operator2 + "&val2=" + val2
-  print("Fetching URL=", url)
   return fetch_provider_data(provider, url)
 
 @app.route('/segmentations', methods=["GET","POST"])
@@ -267,19 +267,19 @@ def render_segmentation_dropdown():
   expName="- Select an experiment -"
   segm_by_provider = get_segmentations()
 
-  for k in request.form.keys():
-    print("key=%s, value=%s" % (k, request.form.get(k)))
+  #for k in request.form.keys():
+  #  print("key=%s, value=%s" % (k, request.form.get(k)))
 
   # get all experiments that have been passed into the form, if any
   exps = [k for k in request.form.keys() if k.startswith("experiment")]
-  print("exps=%s" % exps)
+  #print("exps=%s" % exps)
 
   # if no experiments and operators have been passed - offer up the form to choose from
   if request.form.has_key("selected_provider") and request.form.get("selected_provider") != "- Select a provider -":
     providerUrl = request.form.get("selected_provider")
     if request.form.has_key("segmentation_name") and request.form.get("segmentation_name") != "- Select a segmentation -":
       form_seg_name = request.form.get("segmentation_name")
-      print("form_seg_name=%s" % form_seg_name)
+      #print("form_seg_name=%s" % form_seg_name)
       if form_seg_name.find("!") != -1:
         # here we already chose a segmentation
         # now we need to get the segmentations for the provider
@@ -290,11 +290,11 @@ def render_segmentation_dropdown():
       else:
         # get all experiment names with associated min/max ranges
         segmName = form_seg_name
-      print("len(exps)=%d" % len(exps))
-      print("form(experiment0)=%s" % request.form.get("experiment0"))
+      #print("len(exps)=%d" % len(exps))
+      #print("form(experiment0)=%s" % request.form.get("experiment0"))
       if len(exps)==0 or (len(exps)==1 and exps[0]=="experiment0" and request.form.get("experiment0")=="- Select an experiment -"):
         api_url = "/experiments/list/full/BySegmentationName/" + segmName
-        print("privider=%s, segName=%s, apiUrl=%s" % (providerUrl, segmName, api_url))
+        #print("privider=%s, segName=%s, apiUrl=%s" % (providerUrl, segmName, api_url))
         (status, exps_by_segmentation) = fetch_provider_data_individual(providerUrl, api_url)
         for e in exps_by_segmentation["result"]:
           minVal = float(e["annotationRangeStart"])
@@ -308,9 +308,9 @@ def render_segmentation_dropdown():
         exp_names = dict([(e[10:],request.form.get(e).split("!")[2]) for e in exps])
         ops = dict([(op[8:],request.form.get(op)) for op in [k for k in request.form.keys() if k.startswith("operator")]])
         vals = dict([(val[5:],request.form.get(val)) for val in [k for k in request.form.keys() if k.startswith("value")]])
-        print(exp_names)
-        print(ops)
-        print(vals)
+        #print(exp_names)
+        #print(ops)
+        #print(vals)
         # make a dictonary indexed by an experiment name
         exp_dict = {}
         for k in exp_names:
@@ -319,7 +319,7 @@ def render_segmentation_dropdown():
             exp_dict[exp_name].append((ops[k],vals[k]))
           else:
             exp_dict[exp_name] = [(ops[k],vals[k])]
-        print exp_dict
+        #print exp_dict
         # try and get data out of these
         # the difficulty is in consolidating multiple operators on the same experiment
         # see if we can consolidate all ops to the smallest number of them
@@ -334,36 +334,52 @@ def render_segmentation_dropdown():
               op_dict[op] = [val]
           
           for op in op_dict.keys():
-            if op=="ge" and len(op_dict[op])>1:
-              op_dict[op] = min(op_dict[op])
-            elif op=="le" and len(op_dict[op])>1:
-              op_dict[op] = max(op_dict[op])
+            if op=="ge":
+              if len(op_dict[op])>1:
+                op_dict[op] = min(op_dict[op])
+              else:
+                op_dict[op] = op_dict[op][0]
+            elif op=="le":
+              if len(op_dict[op])>1:
+                op_dict[op] = max(op_dict[op])
+              else:
+                op_dict[op] = op_dict[op][0]
           exp_dict_consolidated[k] = op_dict
-        print(exp_dict_consolidated)
-        
+        #print(exp_dict_consolidated)
+
+        json_output = []
+
         for k in exp_dict_consolidated.keys():
-          print("Experiment=", k)
+          #print("Experiment=", k)
           exp_consolidated = exp_dict_consolidated[k]
           # do we have an "eq" key?
           # each "eq" query is separate
           if exp_consolidated.has_key("eq"):
             for eq_val in exp_consolidated[op]:
               data = get_annotations(providerUrl, k, "eq", eq_val, "", "")
-              print("exp=%s, op=EQ, data=%s" % (k, data))
+              json_output.append(("eq", eq_val, eq_val, data[providerUrl]))
+              #print("exp=%s, op=EQ, data=%s" % (k, data))
           if exp_consolidated.has_key("ge") and exp_consolidated.has_key("le"):
             data = get_annotations(providerUrl, k, "ge", exp_consolidated["ge"], "le", exp_consolidated["le"])
-            print("exp=%s, op=GE&&LE, data=%s" % (k, data))
+            json_output.append(("ge/le", exp_consolidated["ge"], exp_consolidated["le"], data[providerUrl]))
+            #print("exp=%s, op=GE&&LE, data=%s" % (k, data))
           else:
             if exp_consolidated.has_key("ge"):
-              data = get_annotations(providerUrl, k, "ge", exp_consolidated["ge"][0], "", "")
-              print("exp=%s, op=GE, data=%s" % (k, data))
+              data = get_annotations(providerUrl, k, "ge", exp_consolidated["ge"], "", "")
+              json_output.append(("ge", exp_consolidated["ge"], exp_consolidated["ge"], data[providerUrl]))
+              #print("exp=%s, op=GE, data=%s" % (k, data))
             elif exp_consolidated.has_key("le"):
-              data = get_annotations(providerUrl, k, "le", exp_consolidated["le"][0], "", "")
-              print("exp=%s, op=LE, data=%s" % (k, data))
-            else:
-              data = ""
-              print("exp=%s, op=NONE, data=%s" % (k, data))
-        
+              data = get_annotations(providerUrl, k, "le", exp_consolidated["le"], "", "")
+              json_output.append(("le", exp_consolidated["le"], exp_consolidated["le"], data[providerUrl]))
+              #print("exp=%s, op=LE, data=%s" % (k, data))
+            # in a functional language like Scala we would always have an else clause
+        # we will just pass in the list of json results
+        if len(json_output)>0:
+          return render_template("response_segfilter_query.html",
+                         json_output=json_output)
+        else:
+          return render_template("error.html", errmsg="Search returned no results.")
+
     return render_template("home.html",
                            show_segmentations=True,
                            provider_res=session['providers'],
