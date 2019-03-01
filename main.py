@@ -272,15 +272,13 @@ def render_segmentation_dropdown():
 
   # get all experiments that have been passed into the form, if any
   exps = [k for k in request.form.keys() if k.startswith("experiment")]
-  #print("exps=%s" % exps)
 
   # if no experiments and operators have been passed - offer up the form to choose from
   if request.form.has_key("selected_provider") and request.form.get("selected_provider") != "- Select a provider -":
     providerUrl = request.form.get("selected_provider")
     if request.form.has_key("segmentation_name") and request.form.get("segmentation_name") != "- Select a segmentation -":
       form_seg_name = request.form.get("segmentation_name")
-      #print("form_seg_name=%s" % form_seg_name)
-      if form_seg_name.find("!") != -1:
+      if form_seg_name.find("!") != -1: 
         # here we already chose a segmentation
         # now we need to get the segmentations for the provider
         s = request.form.get("segmentation_name").split('!')
@@ -290,11 +288,8 @@ def render_segmentation_dropdown():
       else:
         # get all experiment names with associated min/max ranges
         segmName = form_seg_name
-      #print("len(exps)=%d" % len(exps))
-      #print("form(experiment0)=%s" % request.form.get("experiment0"))
       if len(exps)==0 or (len(exps)==1 and exps[0]=="experiment0" and request.form.get("experiment0")=="- Select an experiment -"):
         api_url = "/experiments/list/full/BySegmentationName/" + segmName
-        #print("privider=%s, segName=%s, apiUrl=%s" % (providerUrl, segmName, api_url))
         (status, exps_by_segmentation) = fetch_provider_data_individual(providerUrl, api_url)
         for e in exps_by_segmentation["result"]:
           minVal = float(e["annotationRangeStart"])
@@ -305,12 +300,9 @@ def render_segmentation_dropdown():
       else:
         # the user actually pressed the search button and we have experiments to extract
         # get names of experiments
-        exp_names = dict([(e[10:],request.form.get(e).split("!")[2]) for e in exps])
+        exp_names = dict([(e[10:],request.form.get(e).split("!")[2]) for e in exps if not request.form.get(e).startswith("-")])
         ops = dict([(op[8:],request.form.get(op)) for op in [k for k in request.form.keys() if k.startswith("operator")]])
         vals = dict([(val[5:],request.form.get(val)) for val in [k for k in request.form.keys() if k.startswith("value")]])
-        #print(exp_names)
-        #print(ops)
-        #print(vals)
         # make a dictonary indexed by an experiment name
         exp_dict = {}
         for k in exp_names:
