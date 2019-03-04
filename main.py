@@ -1,4 +1,5 @@
-import json, urllib2, os, signal, sys, ConfigParser
+import json, urllib2, os, signal, sys
+import yaml
 
 from flask import Flask, render_template, request, redirect, jsonify, g, session
 from flask.json import JSONEncoder
@@ -77,17 +78,21 @@ def read_config_file():
   global default_provider
   global flask_host
   global flask_port
-  config = ConfigParser.SafeConfigParser()
   try:
-    config.read('episb-hub.cfg')
-    default_provider = normalize_provider_url(config.get('Providers', 'DefaultProvider'))
-    if is_real_provider(default_provider):
-      print("Read in default_provider=%s from config file." % default_provider)
-    else:
-      print("Provider in config file does not respond to provider-interface API. Aborting.")
-      kill_flask()
-    flask_host = config.get('HubServer', 'ServerHost')
-    flask_port = config.get('HubServer', 'ServerPort')
+    with open("episb-hub.cfg") as f:
+      config_dict = yaml.safe_load(f)
+    if config_dict.has_key("Providers") and config_dict["Providers"].has_key("DefaultProvider"):
+      default_provider = normalize_provider_url(config_dict["Providers"]["DefaultProvider"])
+      if is_real_provider(default_provider):
+        print("Read in default_provider=%s from config file." % default_provider)
+      else:
+        print("Provider in config file does not respond to provider-interface API. Aborting.")
+        kill_flask()
+    if config_dict.has_key("HubServer"):
+      if config_dict["HubServer"].has_key("ServerHost"):
+        flask_host = config_dict["HubServer"]["ServerHost"]
+      if config_dict["HubServer"].has_key("ServerHost"):
+        flask_port = config_dict["HubServer"]["ServerPort"]
   except Exception as e:
     print("No config file found or configuration is bad. Reason: %s. Aborting." % e.message)
     kill_flask()
