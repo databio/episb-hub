@@ -1,0 +1,47 @@
+{% include 'head.html' %}
+
+{% include 'menu.html' %}
+
+<div class="container">
+
+  <h1>Segmentation filter results</h1>
+
+  <div>
+    <p class="lead">Results:</p>
+
+    <input class="form-control" id="searchInput" type="text" placeholder="Filter..." style="margin-bottom:10px;">
+    <table class="table table-hover table-sm">
+      <thead>
+        <tr>
+          <th>Filter op</th>
+          <th>Filter val min</th>
+          <th>Filter val max</th>
+          <th>Region ID</th>
+          <th>Annotation Value</th>
+          <th>Experiment Name</th>
+          <th>Species</th>
+        </tr>
+      </thead>
+      <tbody id="retTable">
+      {% for op, op_val_1, op_val_2, data in json_output %}
+        {% if data.result != "None" %}
+          {% for index in data.result %}
+          <tr>
+            <td>{{ op }}</td>
+            <td>{{ op_val_1 }}</td>
+            <td>{{ op_val_2 }}</td>
+            <td>{{ index.segmentID }}</td>
+            <td>{{ index.annValue }}</td>
+            <td>{{ index.experiment.experimentName }}</td>
+            <td>{{ index.experiment.experimentSpecies }}</td>
+          </tr>
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{% include 'foot.html' %}
