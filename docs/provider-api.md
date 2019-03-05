@@ -291,10 +291,14 @@ Via API: [http://provider.episb.org/episb-provider/segments/find/BySegmentID/tes
 
 A user may be interested in obtaining all the annotations committed with an experiment. The following call provides this information:
 ```
-GET /experiments/get/ByName/:expName
+GET /experiments/get/ByName/:expName?op1=operation&val1=value&op2=operation&val2=value
 ```
 
+The range of annotation values can be restricted/filtered by the use of op1/op2 operations and val1/val2 values.
+
 **Input**: :expName is the name of the experiment, such as "BroadHMM"
+           :op1 and op2 are one of [gte,lte,eq]
+           :val1 and val2 are values in the range of annotation values for an experiment
 
 Example:
 ```
@@ -309,16 +313,17 @@ would produce something like:
 '{"result":[{"segmentID":"BroadHMM::365d4660-85af-4841-8643-d2b7f8eb2839","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::826f9efe-0931-48a5-b2fc-a6117ad69e28","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4aea194d-8a69-4839-b698-41ec8602662d","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4d30c911-54dd-469e-9595-6a7042270d0b","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}}],"error":"None"}'
 ```
 
-Via API: [http://provider.episb.org/episb-provider/experiments/get/ByName/BroadHMMExperiment](http://provider.episb.org/episb-provider/experiments/get/ByName/BroadHMMExperiment)
+Via API: [http://provider.episb.org/episb-provider/experiments/get/ByName/BroadHMMExperiment](http://provider.episb.org/episb-provider/experiments/get/ByName/BroadHMMExperiment) or [http://provider.episb.org/episb-provider/experiments/get/ByName/CLL?op1=gte&val1=0.7](http://provider.episb.org/episb-provider/experiments/get/ByName/CLL?op1=gte&val1=0.7) or 
 
 ## Getting all annotation values associated with a segmentation ##
 
 A user may be interested in obtaining all the annotations associated with a particular segmentation. Note that annotations from different experiments may use the same segmentation.
 ```
-GET /experiments/get/BySegmentationName/:segName
+GET /experiments/get/BySegmentationName/:segName?matrix=true
 ```
 
 **Input**: :segName is the name of the segmentation, such as "BroadHMM" or "TestSegmentation"
+           :if ?matrix=true, return a matrix where each row is a tuple (segmentID, annotationValue)
 
 Example:
 ```
@@ -333,7 +338,13 @@ would produce something like:
 '{"result":[{"segmentID":"BroadHMM::365d4660-85af-4841-8643-d2b7f8eb2839","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::826f9efe-0931-48a5-b2fc-a6117ad69e28","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4aea194d-8a69-4839-b698-41ec8602662d","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4d30c911-54dd-469e-9595-6a7042270d0b","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}}],"error":"None"}'
 ```
 
-Via API: [http://provider.episb.org/episb-provider/experiments/get/BySegmentationName/BroadHMM](http://provider.episb.org/episb-provider/experiments/get/BySegmentationName/BroadHMM)
+Via API: [http://provider.episb.org/episb-provider/experiments/get/BySegmentationName/BroadHMM](http://provider.episb.org/episb-provider/experiments/get/BySegmentationName/BroadHMM) or [http://provider.episb.org/episb-provider/experiments/get/BySegmentationName/BroadHMM?matrix=true](http://provider.episb.org/episb-provider/experiments/get/BySegmentationName/BroadHMM?matrix=true)
+
+If using ?matrix=true and if the caller indicates that they can accept compressed results, the API will return a compressed .gz file as a result:
+
+```
+curl -H "Accept-Encoding: gzip" http://provider.episb.org/episb-provider/experiments/get/BySegmentationName/broad?matrix=true --output some_file.gz
+```
 
 ## Getting all annotation values associated with a particular region ID ##
 
