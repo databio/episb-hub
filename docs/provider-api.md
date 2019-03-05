@@ -130,6 +130,8 @@ would produce something like:
 '{"result":[{"segmentationName":"BroadHMM","segmentList":["BroadHMM::d9d7d23b-658c-43c3-a34a-94939b6403c9","BroadHMM::81f79f42-a06d-44a2-80d1-aed913a7442c","BroadHMM::3433568d-bbb7-4c41-be7e-0b00dd48f096","BroadHMM::365d4660-85af-4841-8643-d2b7f8eb2839","BroadHMM::f9650174-71fa-4df5-944e-9ba9cf6402a8","BroadHMM::525bca34-44df-4c78-be56-558915f603fd","BroadHMM::a0a6d44d-7820-47b1-a70e-f56d0abc0d95","BroadHMM::cef16c99-8d4f-4a92-9a10-0163e38014c3","BroadHMM::177f1523-1e47-47b9-8b11-1f548b7beaa2","BroadHMM::c93addab-a323-456b-990c-9eacdb3b896e","BroadHMM::92034f77-9462-4d23-ae8e-3bacfbcce507","BroadHMM::cf1d7a33-c197-4be8-beff-b317a5234e75","BroadHMM::1dc51ea0-0fea-4ef8-b217-3cc64e98be10","BroadHMM::5acb2c06-fb6d-436f-9894-f339c219241e","BroadHMM::808010d6-6676-4731-9962-3691e6ca392f"]}],"error":"None"}'
 ```
 
+Via API: [http://provider.episb.org/episb-provider/segmentations/get/ByName/BroadHMM](http://provider.episb.org/episb-provider/segmentations/get/ByName/BroadHMM)
+
 ## Getting all the regions (full info - chr/start/stop) within a segmentation ##
 
 To get the full information on all regions within a segmentation (segment ID, chromosome, start and stop position coordinates), the following API may be used:
@@ -183,6 +185,8 @@ would produce something like:
 ```
 '{"result":[{"segID":"BroadHMM::3433568d-bbb7-4c41-be7e-0b00dd48f096","segChr":"X","segStart":153889606,"segEnd":153890206},{"segID":"BroadHMM::30f54ade-c14e-43be-b37d-2349f7960809","segChr":"X","segStart":153952006,"segEnd":153953406},{"segID":"BroadHMM::826f9efe-0931-48a5-b2fc-a6117ad69e28","segChr":"X","segStart":153962406,"segEnd":153962606},{"segID":"BroadHMM::6093072b-538b-4668-ab5c-3b9bad6a8ef8","segChr":"X","segStart":153978406,"segEnd":153979206},{"segID":"BroadHMM::be702e3c-f568-47fb-9717-068d4e98fcb4","segChr":"X","segStart":153988606,"segEnd":153989806},{"segID":"BroadHMM::9098ae95-6d7f-42e5-bb0b-872c9fff599b","segChr":"X","segStart":153992406,"segEnd":153992606},{"segID":"BroadHMM::40bd6776-a35b-4c0a-88e2-4a4f5c086d39","segChr":"X","segStart":154012406,"segEnd":154028606},{"segID":"BroadHMM::d7a25dae-3031-4ebf-a70a-9cd6cea196f8","segChr":"X","segStart":154029206,"segEnd":154029806},{"segID":"BroadHMM::12fbd660-eec5-4394-b662-3d37317d8aa8","segChr":"X","segStart":154055406,"segEnd":154055806},{"segID":"BroadHMM::01237fc3-e992-4e88-bb80-a7ec32538b5b","segChr":"X","segStart":154057206,"segEnd":154057806},{"segID":"BroadHMM::85904995-9c0c-4817-8345-142cf4f5dab2","segChr":"X","segStart":154112206,"segEnd":154113006},{"segID":"BroadHMM::8efb2e19-1428-4fdc-8b50-ac48143c6824","segChr":"X","segStart":154113006,"segEnd":154113606}],"error":"None"}'
 ```
+
+Via API: [http://provider.episb.org/episb-provider/segments/get/BySegmentationName/BroadHMM](http://provider.episb.org/episb-provider/segments/get/BySegmentationName/BroadHMM)
 
 ## Getting all the regions that are within a certain coordinate position range on a chromosome ##
 
@@ -240,6 +244,8 @@ or, this would work equally well:
 conn.request("GET", "/episb-provider/segments/get/fromSegment/1/20000/40000")
 ```
 
+Via API: [http://provider.episb.org/episb-provider/segments/get/fromSegment/1/20000/40000](http://provider.episb.org/episb-provider/segments/get/fromSegment/1/20000/40000)
+
 ## Getting a single region based on a region ID ##
 
 This call takes as a parameter the region ID and returns a region's chromosome and positional coordinates.
@@ -263,7 +269,8 @@ A typical reply would be:
 }
 ```
 
-**Input** :segmentID is something like "TestSegmentation::2a43bb7b-d35d-4193-8941-e8a2d232ee95"
+**Input** :segmentID is something like
+"TestSegmentation::2a43bb7b-d35d-4193-8941-e8a2d232ee95"
 
 Example:
 ```
@@ -277,6 +284,8 @@ would produce something like:
 ```
 '{"result":[{"segID":"testsegmentation::512b13b3-67cd-46ef-87c8-0c7579e2304d","segChr":"1","segStart":10000,"segEnd":10600}],"error":"None"}'
 ```
+
+Via API: [http://provider.episb.org/episb-provider/segments/find/BySegmentID/testsegmentation::512b13b3-67cd-46ef-87c8-0c7579e2304d](http://provider.episb.org/episb-provider/segments/find/BySegmentID/testsegmentation::512b13b3-67cd-46ef-87c8-0c7579e2304d)
 
 ## Getting all annotation values for an experiment ##
 
@@ -300,6 +309,8 @@ would produce something like:
 '{"result":[{"segmentID":"BroadHMM::365d4660-85af-4841-8643-d2b7f8eb2839","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::826f9efe-0931-48a5-b2fc-a6117ad69e28","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4aea194d-8a69-4839-b698-41ec8602662d","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4d30c911-54dd-469e-9595-6a7042270d0b","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}}],"error":"None"}'
 ```
 
+Via API: [http://provider.episb.org/episb-provider/experiments/get/ByName/BroadHMMExperiment](http://provider.episb.org/episb-provider/experiments/get/ByName/BroadHMMExperiment)
+
 ## Getting all annotation values associated with a segmentation ##
 
 A user may be interested in obtaining all the annotations associated with a particular segmentation. Note that annotations from different experiments may use the same segmentation.
@@ -321,6 +332,8 @@ would produce something like:
 ```
 '{"result":[{"segmentID":"BroadHMM::365d4660-85af-4841-8643-d2b7f8eb2839","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::826f9efe-0931-48a5-b2fc-a6117ad69e28","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4aea194d-8a69-4839-b698-41ec8602662d","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4d30c911-54dd-469e-9595-6a7042270d0b","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}}],"error":"None"}'
 ```
+
+Via API: [http://provider.episb.org/episb-provider/experiments/get/BySegmentationName/BroadHMM](http://provider.episb.org/episb-provider/experiments/get/BySegmentationName/BroadHMM)
 
 ## Getting all annotation values associated with a particular region ID ##
 
@@ -344,6 +357,8 @@ would produce something like:
 '{"result":[{"segmentID":"BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}}],"error":"None"}'
 ```
 
+Via API: [http://provider.episb.org/episb-provider/experiments/get/ByRegionID/BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf](http://provider.episb.org/episb-provider/experiments/get/ByRegionID/BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf)
+
 ## Getting a list of all segmentation IDs (names) ##
 
 This API point can be used to obtain a list of all the segmentations kept within the provider.
@@ -365,6 +380,8 @@ would produce something like:
 ```
 {"result":["testsegmentation","broadhmm"],"error":"None"}
 ```
+
+Via API: [http://provider.episb.org/episb-provider/segmentations/list/all](http://provider.episb.org/episb-provider/segmentations/list/all)
 
 ## Getting a list of all experiment IDs (names) associated with a particular segmentation ##
 
@@ -390,6 +407,8 @@ would produce something like:
 
 In this example we have only one experiment that was tied to a segmentation.
 
+Via API: [http://provider.episb.org/episb-provider/experiments/list/BySegmentationName/broadhmm](http://provider.episb.org/episb-provider/experiments/list/BySegmentationName/broadhmm)
+
 ## Getting a full description of an experiment associated with a particular segmentation ##
 
 Continuing with the above theme, sometimes we do not want just the list of all the experiment IDs connected with a segmentation. Instead, we want the whole description of the experiment, its annotation value range and key and other pertinent information. The following API point provides this information.
@@ -412,6 +431,8 @@ would produce something like:
 ```
 {"result":[{"providerName":"episb-provider","providerDescription":"sample segmentation provider","segmentationName":"broadhmm","experimentName":"BroadHMMExperiment","cellType":"sample cell type","description":"sample experiment description","annotationKey":"value","annotationRangeStart":"0","annotationRangeEnd":"1"}],"error":"None"}
 ```
+
+Via API: [http://provider.episb.org/episb-provider/experiments/list/full/BySegmentationName/broadhmm](http://provider.episb.org/episb-provider/experiments/list/full/BySegmentationName/broadhmm)
 
 ## Match APIs ##
 
