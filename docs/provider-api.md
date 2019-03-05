@@ -84,6 +84,8 @@ would produce something like:
 '{"result":[{"providerName":"episb-provider","providerDescription":"sample segmentation provider","segmentationName":"testsegmentation","experimentName":"testexperiment","cellType":"sample cell type","description":"sample experiment description","annotationKey":"value","annotationRangeStart":"0","annotationRangeEnd":"0"},{"providerName":"episb-provider","providerDescription":"sample segmentation provider","segmentationName":"broadhmm","experimentName":"BroadHMMExperiment","cellType":"sample cell type","description":"sample experiment description","annotationKey":"value","annotationRangeStart":"0","annotationRangeEnd":"0"}],"error":"None"}'
 ```
 
+Via API: [http://provider.episb.org/episb-provider/segmentations/get/all](http://provider.episb.org/episb-provider/segmentations/get/all)
+
 ## Getting a list of all region IDs within a segmentation ##
 
 Once a segmentation name is known, a list of all region IDs within that segmentation can be obtained by calling:
