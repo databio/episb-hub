@@ -287,7 +287,7 @@ would produce something like:
 '{"result":[{"segID":"testsegmentation::512b13b3-67cd-46ef-87c8-0c7579e2304d","segChr":"1","segStart":10000,"segEnd":10600}],"error":"None"}'
 ```
 
-Via API: [http://provider.episb.org/episb-provider/segments/find/BySegmentID/testsegmentation::512b13b3-67cd-46ef-87c8-0c7579e2304d](http://provider.episb.org/episb-provider/segments/find/BySegmentID/testsegmentation::512b13b3-67cd-46ef-87c8-0c7579e2304d)
+Via API: [http://provider.episb.org/episb-provider/segments/find/BySegmentID/DHS::821fd8a9-1de4-4207-a03d-544f07be4bdd](http://provider.episb.org/episb-provider/segments/find/BySegmentID/DHS::821fd8a9-1de4-4207-a03d-544f07be4bdd)
 
 ## Getting all annotation values for an experiment ##
 
@@ -315,7 +315,7 @@ would produce something like:
 '{"result":[{"segmentID":"BroadHMM::365d4660-85af-4841-8643-d2b7f8eb2839","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::826f9efe-0931-48a5-b2fc-a6117ad69e28","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4aea194d-8a69-4839-b698-41ec8602662d","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}},{"segmentID":"BroadHMM::4d30c911-54dd-469e-9595-6a7042270d0b","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}}],"error":"None"}'
 ```
 
-Via API: [http://provider.episb.org/episb-provider/experiments/get/ByName/BroadHMMExperiment](http://provider.episb.org/episb-provider/experiments/get/ByName/BroadHMMExperiment) or [http://provider.episb.org/episb-provider/experiments/get/ByName/CLL?op1=gte&val1=0.7](http://provider.episb.org/episb-provider/experiments/get/ByName/CLL?op1=gte&val1=0.7) or 
+Via API: [http://provider.episb.org/episb-provider/experiments/get/ByName/CLL](http://provider.episb.org/episb-provider/experiments/get/ByName/CLL) or [http://provider.episb.org/episb-provider/experiments/get/ByName/CLL?op1=gte&val1=0.7](http://provider.episb.org/episb-provider/experiments/get/ByName/CLL?op1=gte&val1=0.7) or 
 
 ## Getting all annotation values associated with a segmentation ##
 
@@ -355,22 +355,22 @@ A user may be interested in obtaining all the annotations associated with a part
 GET /experiments/get/ByRegionID/:regionID
 ```
 
-**Input**: :regionID is the id of the region in question, e.g. "BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf"
+**Input**: :regionID is the id of the region in question, e.g. "BroadHmm::63b4f4bb-f7c0-482a-88a3-875e2356670e"
 
 Example:
 ```
 import httplib
 conn = httplib.HTTPConnection("provider.episb.org")
-conn.request("GET", "/episb-provider/experiments/get/ByRegionID/BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf")
+conn.request("GET", "/episb-provider/experiments/get/ByRegionID/BroadHmm::63b4f4bb-f7c0-482a-88a3-875e2356670e")
 r1 = conn.getresponse()
 print(r1.read())
 ```
 would produce something like:
 ```
-'{"result":[{"segmentID":"BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf","annValue":"0","experiment":{"experimentName":"BroadHMMExperiment","experimentProtocol":"","experimentCellType":"","experimentSpecies":"","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":"Loaded from preformatted file"},"study":{"studyAuthor":{"familyName":"episb","givenName":"default","email":"info@episb.org"},"studyManuscript":"","studyDescription":"","studyDate":""}}],"error":"None"}'
+'{"result":[{"segmentID":"BroadHmm::63b4f4bb-f7c0-482a-88a3-875e2356670e","annValue":0.0,"experiment":{"experimentName":"Gm12878","experimentProtocol":"","experimentCellType":"","experimentSpecies":"Human","experimentTissue":"","experimentAntibody":"","experimentTreatment":"","experimentDescription":""},"study":{"studyAuthor":{"familyName":"Default","givenName":"Author","email":"info@episb.org"},"studyManuscript":"Default Manuscript","studyDescription":"","studyDate":""}}],"error":"None"}'
 ```
 
-Via API: [http://provider.episb.org/episb-provider/experiments/get/ByRegionID/BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf](http://provider.episb.org/episb-provider/experiments/get/ByRegionID/BroadHMM::351a579a-8f91-4410-a2ab-b8eee8a58edf)
+Via API: [http://provider.episb.org/episb-provider/experiments/get/ByRegionID/BroadHmm::63b4f4bb-f7c0-482a-88a3-875e2356670e](http://provider.episb.org/episb-provider/experiments/get/ByRegionID/BroadHmm::63b4f4bb-f7c0-482a-88a3-875e2356670e)
 
 ## Getting a list of all segmentation IDs (names) ##
 
