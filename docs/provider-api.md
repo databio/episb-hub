@@ -190,6 +190,8 @@ would produce something like:
 
 Via API: [http://provider.episb.org/episb-provider/segments/get/BySegmentationName/BroadHMM](http://provider.episb.org/episb-provider/segments/get/BySegmentationName/BroadHMM)
 
+To obtain the same output in BED file format, append ?format=bed to the query. For example: [http://provider.episb.org/episb-provider/segments/get/BySegmentationName/BroadHMM?format=bed](http://provider.episb.org/episb-provider/segments/get/BySegmentationName/BroadHMM?format=bed)
+
 ## Getting all the regions that are within a certain coordinate position range on a chromosome ##
 
 To do the above, the following API call may be used:
@@ -248,6 +250,8 @@ conn.request("GET", "/episb-provider/segments/get/fromSegment/1/20000/40000")
 
 Via API: [http://provider.episb.org/episb-provider/segments/get/fromSegment/1/20000/40000](http://provider.episb.org/episb-provider/segments/get/fromSegment/1/20000/40000)
 
+To obtain the same output in BED file format, append ?format=bed to the query. For example: [http://provider.episb.org/episb-provider/segments/get/fromSegment/1/20000/40000?format=bed](http://provider.episb.org/episb-provider/segments/get/fromSegment/1/20000/40000?format=bed)
+
 ## Getting a single region based on a region ID ##
 
 This call takes as a parameter the region ID and returns a region's chromosome and positional coordinates.
@@ -271,8 +275,7 @@ A typical reply would be:
 }
 ```
 
-**Input** :segmentID is something like
-"TestSegmentation::2a43bb7b-d35d-4193-8941-e8a2d232ee95"
+**Input** :segmentID is something like "TestSegmentation::2a43bb7b-d35d-4193-8941-e8a2d232ee95"
 
 Example:
 ```
@@ -288,6 +291,8 @@ would produce something like:
 ```
 
 Via API: [http://provider.episb.org/episb-provider/segments/find/BySegmentID/DHS::821fd8a9-1de4-4207-a03d-544f07be4bdd](http://provider.episb.org/episb-provider/segments/find/BySegmentID/DHS::821fd8a9-1de4-4207-a03d-544f07be4bdd)
+
+To obtain the same output in BED file format, append ?format=bed to the query. For example: [http://provider.episb.org/episb-provider/segments/find/BySegmentID/DHS::821fd8a9-1de4-4207-a03d-544f07be4bdd?format=bed](http://provider.episb.org/episb-provider/segments/find/BySegmentID/DHS::821fd8a9-1de4-4207-a03d-544f07be4bdd?format=bed)
 
 ## Getting all annotation values for an experiment ##
 
