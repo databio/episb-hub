@@ -4,6 +4,8 @@ import yaml
 from flask import Flask, render_template, request, redirect, jsonify, g, session
 from flask.json import JSONEncoder
 
+from _version import __version__ as episbhub_version
+
 # global variables (yuck!) for init purposes
 default_provider=''
 flask_host=''
@@ -101,6 +103,10 @@ app = Flask(__name__)
 app.secret_key = "episb-secret-key"
 app.json_encoder = EpisbJSONEncoder
 app.before_first_request(read_config_file)
+
+@app.context_processor
+def inject_dict_for_all_templates():
+  return dict(episbhub_version=episbhub_version)
 
 # check if we need to initialize providers session
 def need_to_init_providers():
