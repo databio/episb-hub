@@ -1,8 +1,8 @@
 # How to query existing data
 
-This document describes how to use a hub's web interface and API. You can find our prototype hub at [episb.org](http://episb.org), which will allow you to query various public data providers using several different query options. Any of these queries can be done either via the web, or via programmatic API. 
+***NB**: We have a different document that explains [how to use EPISB provider API](http://code.databio.org/episb/howto-use-episb-API-calls/) from software*
 
-We have implemented some queries and are actively working on additional query types. For discussion on different query types, see [the `query-type` issues on GitHub](https://github.com/databio/episb-hub/issues?q=is%3Aissue+is%3Aopen+label%3Aquery-type). 
+You can find our prototype hub at [episb.org](http://episb.org), which will allow you to query various public data providers using several different query options. Any of these queries can be done either via the web using the [main episb.org hub](http://episb.org), or via programmatic API. For discussion on different query types, see the `query-type` issues: [https://github.com/databio/episb-hub/issues](https://github.com/databio/episb-hub/issues). 
 
 ## Query: Retrieve regions
 
