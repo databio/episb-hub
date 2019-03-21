@@ -14,6 +14,7 @@ nav:
     - Normalize to a segmentation: howto-normalize.md
     - Access data using R or python: howto-use-episb-API-calls.md
   - Administrator guides:
+    - Controlling vocabulary: controlled-vocabulary.md
     - Build a data provider: howto-build-provider.md
     - Build a hub: howto-build-hub.md
   - Reference:
@@ -33,17 +34,6 @@ navbar:
   - text: Episb web app
     icon: fa-play
     href: http://episb.org
-  # - text: Documentation
-  #   icon: fa-pencil
-  #   href: reference/index.html
-  - text: GitHub
-    icon: fa-github fa-lg
-    href: https://github.com/databio/episb-hub
-  right:
-  - text: Databio.org
-    href: http://databio.org
-  - text: Software & Data
-    href: http://databio.org/software/
 
 plugins:
   - search
