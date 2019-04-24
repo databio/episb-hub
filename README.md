@@ -1,6 +1,6 @@
 # Episb hub
 
-User documentation can be found at http://databio.org/episb
+User documentation can be found at http://code.databio.org/episb
 
 ## Running the app for development
 
