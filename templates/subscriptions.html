@@ -14,7 +14,13 @@
         <th scope="col">#</th>
         <th scope="col">Provider name</th>
         <th scope="col">URL</th>
-        <th scope="col">Author</th>
+        <th scope="col">Institution</th>
+        <th scope="col">Contact</th>
+        <th scope="col">Segm. provider?</th>
+        <th scope="col">[segmentations]</th>
+        <th scope="col">[regions]</th>
+        <th scope="col">[experiments]</th>
+        <th scope="col">[annotations]</th>
       </tr>
     </thead>
     <tbody>
@@ -24,7 +30,13 @@
           <th scope="row">{{ loop.index }}</th>
           <td>{{ provider.name }}</td>
           <td>{{ provider.url }}</td>
-          <td>{{ provider.admin }}</td>
+          <td>{{ provider.inst }}</td>
+          <td>{{ provider.admin }} {{ provider.contact }}</td>
+          <td>{{ provider.provider }}</td>
+          <td>{{ provider.segs }}</td>
+          <td>{{ provider.regions }}</td>
+          <td>{{ provider.exps }}</td>
+          <td>{{ provider.anns }}</td>
         </tr>
       {% endfor %}
       {% endif %}
@@ -43,6 +55,5 @@
       </div>
     </form>
   </div>
-</div>
 
 {% include 'foot.html' %}

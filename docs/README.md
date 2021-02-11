@@ -25,7 +25,7 @@ The vocabulary server provides common terms so that distributed data sources can
 
 ### 2. One or more data providers
 
-The data provider is a generic server that hosts actual epigenome data. The data is stored as *regions* (*a.k.a.* segments, or genomic intervals). This is a RESTful server that provides access to the raw data via the [data provider API](/provider-api/) (which is still under development). There will be many data providers, and we aim to provide a packaged system so that a third party with either public or private data could fit that data into a data provider instance that would integrate with the epigenome switchboard.
+The data provider is a generic server that hosts actual epigenome data. The data is stored as *regions* (*a.k.a.* segments, or genomic intervals). This is a RESTful server that provides access to the raw data via the [data provider API](provider-api/) (which is still under development). There will be many data providers, and we aim to provide a packaged system so that a third party with either public or private data could fit that data into a data provider instance that would integrate with the epigenome switchboard.
 
 Our protoype data provider is housed here:
 
