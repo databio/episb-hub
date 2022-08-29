@@ -1,3 +1,4 @@
 Flask
 requests
 boto3
+PyYAML
