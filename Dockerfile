@@ -1,5 +1,5 @@
 FROM tiangolo/uwsgi-nginx-flask:python2.7-alpine3.7
-MAINTAINER "nem2p@virginia.edu
+MAINTAINER nem2p@virginia.edu
 
 COPY . /app
 COPY episb-hub.cfg /app

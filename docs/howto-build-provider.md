@@ -32,7 +32,7 @@ For more Tomcat configuration, the files usually reside in a location such as /e
 ```sh
 $ git clone https://github.com/databio/episb-provider.git
 $ cd episb-provider/episb-provider
-$ bash ./docker_build.sh
+$ ./docker_build.sh
 $ docker run -d --rm -p 8080:8080 episb-provider:latest
 ```
 
